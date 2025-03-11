@@ -1,21 +1,6 @@
-import mongoose, { type Document, Schema } from "mongoose"
+const mongoose = require("mongoose");
 
-export interface IEvent extends Document {
-  title: string
-  description: string
-  author: mongoose.Types.ObjectId
-  mediaIds: string[]
-  isDeleted: boolean
-  calendar: {
-    date: Date
-    location: string
-  }
-  attendees: mongoose.Types.ObjectId[]
-  createdAt: Date
-  updatedAt: Date
-}
-
-const EventSchema = new Schema<IEvent>(
+const EventSchema = new mongoose.Schema(
   {
     title: {
       type: String,
@@ -27,7 +12,7 @@ const EventSchema = new Schema<IEvent>(
       required: true,
     },
     author: {
-      type: Schema.Types.ObjectId,
+      type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
     },
@@ -52,15 +37,14 @@ const EventSchema = new Schema<IEvent>(
     },
     attendees: [
       {
-        type: Schema.Types.ObjectId,
+        type: mongoose.Schema.Types.ObjectId,
         ref: "User",
       },
     ],
   },
   {
     timestamps: true,
-  },
-)
+  }
+);
 
-export default mongoose.model<IEvent>("Event", EventSchema)
-
+module.exports = mongoose.model("Event", EventSchema);

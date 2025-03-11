@@ -1,5 +1,5 @@
-import express from "express";
-import {
+const express = require("express");
+const {
   createStory,
   getStories,
   getFeaturedStories,
@@ -8,8 +8,8 @@ import {
   deleteStory,
   likeStory,
   addComment,
-} from "../controllers/storyController.js";
-import { protect } from "../middleware/auth.js";
+} = require("../controllers/storyController");
+const { protect } = require("../middleware/auth");
 
 const router = express.Router();
 
@@ -26,4 +26,4 @@ router.delete("/:id", deleteStory);
 router.post("/:id/like", likeStory);
 router.post("/:id/comments", addComment);
 
-export default router;
+module.exports = router;

@@ -1,10 +1,10 @@
-"use client"
+"use client";
 
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { useAuth } from "@/hooks/use-auth"
-import { useState } from "react"
-import { Menu, X } from "lucide-react"
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { useAuth } from "@/hooks/use-auth";
+import { useState } from "react";
+import { Menu, X } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -12,23 +12,31 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-
+} from "@/components/ui/dropdown-menu";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import Image from "next/image";
 export default function Header() {
-  const { user, logout } = useAuth()
-  const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const { user, logout } = useAuth();
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const toggleMenu = () => {
-    setIsMenuOpen(!isMenuOpen)
-  }
+    setIsMenuOpen(!isMenuOpen);
+  };
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-16 items-center justify-between">
         <div className="flex items-center gap-2">
-          <Link href="/" className="flex items-center gap-2">
-            <span className="text-2xl font-bold text-primary">Alumni Network</span>
+          <Link href="/" className="flex items-center gap-2 justify-center">
+            <Image
+              src="/alumni-logo.png"
+              alt="University Logo"
+              width={40}
+              height={40}
+            />
+            <span className="text-2xl font-bold text-primary">
+              RIC Alumni Network
+            </span>
           </Link>
         </div>
 
@@ -37,13 +45,22 @@ export default function Header() {
           <Link href="/" className="text-sm font-medium hover:text-primary">
             Home
           </Link>
-          <Link href="/stories" className="text-sm font-medium hover:text-primary">
+          <Link
+            href="/stories"
+            className="text-sm font-medium hover:text-primary"
+          >
             Success Stories
           </Link>
-          <Link href="/events" className="text-sm font-medium hover:text-primary">
+          <Link
+            href="/events"
+            className="text-sm font-medium hover:text-primary"
+          >
             Events
           </Link>
-          <Link href="/alumni" className="text-sm font-medium hover:text-primary">
+          <Link
+            href="/alumni"
+            className="text-sm font-medium hover:text-primary"
+          >
             Alumni Directory
           </Link>
         </nav>
@@ -53,9 +70,15 @@ export default function Header() {
           {user ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="relative h-8 w-8 rounded-full">
+                <Button
+                  variant="ghost"
+                  className="relative h-8 w-8 rounded-full"
+                >
                   <Avatar className="h-8 w-8">
-                    <AvatarImage src={user.profileImage || ""} alt={user.username} />
+                    <AvatarImage
+                      src={user.profileImage || ""}
+                      alt={user.username}
+                    />
                     <AvatarFallback className="bg-primary text-primary-foreground">
                       {user.firstname?.[0]}
                       {user.lastname?.[0]}
@@ -69,7 +92,9 @@ export default function Header() {
                     <p className="text-sm font-medium leading-none">
                       {user.firstname} {user.lastname}
                     </p>
-                    <p className="text-xs leading-none text-muted-foreground">{user.email}</p>
+                    <p className="text-xs leading-none text-muted-foreground">
+                      {user.email}
+                    </p>
                   </div>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
@@ -98,8 +123,17 @@ export default function Header() {
         </div>
 
         {/* Mobile Menu Button */}
-        <Button variant="ghost" size="icon" className="md:hidden" onClick={toggleMenu}>
-          {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+        <Button
+          variant="ghost"
+          size="icon"
+          className="md:hidden"
+          onClick={toggleMenu}
+        >
+          {isMenuOpen ? (
+            <X className="h-6 w-6" />
+          ) : (
+            <Menu className="h-6 w-6" />
+          )}
         </Button>
       </div>
 
@@ -107,34 +141,58 @@ export default function Header() {
       {isMenuOpen && (
         <div className="md:hidden border-t">
           <div className="container py-4 flex flex-col gap-4">
-            <Link href="/" className="text-sm font-medium hover:text-primary" onClick={toggleMenu}>
+            <Link
+              href="/"
+              className="text-sm font-medium hover:text-primary"
+              onClick={toggleMenu}
+            >
               Home
             </Link>
-            <Link href="/stories" className="text-sm font-medium hover:text-primary" onClick={toggleMenu}>
+            <Link
+              href="/stories"
+              className="text-sm font-medium hover:text-primary"
+              onClick={toggleMenu}
+            >
               Success Stories
             </Link>
-            <Link href="/events" className="text-sm font-medium hover:text-primary" onClick={toggleMenu}>
+            <Link
+              href="/events"
+              className="text-sm font-medium hover:text-primary"
+              onClick={toggleMenu}
+            >
               Events
             </Link>
-            <Link href="/alumni" className="text-sm font-medium hover:text-primary" onClick={toggleMenu}>
+            <Link
+              href="/alumni"
+              className="text-sm font-medium hover:text-primary"
+              onClick={toggleMenu}
+            >
               Alumni Directory
             </Link>
 
             {user ? (
               <>
-                <Link href="/profile" className="text-sm font-medium hover:text-primary" onClick={toggleMenu}>
+                <Link
+                  href="/profile"
+                  className="text-sm font-medium hover:text-primary"
+                  onClick={toggleMenu}
+                >
                   Profile
                 </Link>
                 {user.usertype === "admin" && (
-                  <Link href="/admin" className="text-sm font-medium hover:text-primary" onClick={toggleMenu}>
+                  <Link
+                    href="/admin"
+                    className="text-sm font-medium hover:text-primary"
+                    onClick={toggleMenu}
+                  >
                     Admin Dashboard
                   </Link>
                 )}
                 <Button
                   variant="outline"
                   onClick={() => {
-                    logout()
-                    toggleMenu()
+                    logout();
+                    toggleMenu();
                   }}
                 >
                   Log out
@@ -158,6 +216,5 @@ export default function Header() {
         </div>
       )}
     </header>
-  )
+  );
 }
-

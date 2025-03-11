@@ -1,15 +1,14 @@
 {
   "name": "alumni-website",
   "version": "1.0.0",
-  "description": "University Alumni Network",
+  "description": "RIC Alumni Network",
   "main": "index.js",
-  "type": "module",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "server": "nodemon --exec 'node --loader ts-node/esm' server/index.ts",
+    "server": "nodemon --exec ts-node server/index.ts",
     "server:build": "tsc -p tsconfig.server.json",
     "server:start": "node dist/server/index.js",
     "dev:full": "concurrently \"npm run dev\" \"npm run server\""
@@ -58,6 +57,7 @@
     "@types/uuid": "^9.0.8",
     "autoprefixer": "^10.4.19",
     "concurrently": "^8.2.2",
+    "cross-env": "^7.0.3",
     "eslint": "^8.57.0",
     "eslint-config-next": "14.2.3",
     "nodemon": "^3.1.9",

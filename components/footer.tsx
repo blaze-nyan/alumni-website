@@ -1,4 +1,4 @@
-import Link from "next/link"
+import Link from "next/link";
 
 export default function Footer() {
   return (
@@ -6,8 +6,12 @@ export default function Footer() {
       <div className="container py-8 md:py-12">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div className="space-y-4">
-            <h3 className="text-lg font-bold text-primary">Alumni Network</h3>
-            <p className="text-sm text-muted-foreground">Connecting graduates and building a stronger community.</p>
+            <h3 className="text-lg font-bold text-primary">
+              RIC Alumni Network
+            </h3>
+            <p className="text-sm text-muted-foreground">
+              Connecting graduates and building a stronger community.
+            </p>
           </div>
           <div>
             <h4 className="text-sm font-semibold mb-4">Quick Links</h4>
@@ -86,10 +90,12 @@ export default function Footer() {
           </div>
         </div>
         <div className="mt-8 border-t pt-8 text-center text-sm text-muted-foreground">
-          <p>© {new Date().getFullYear()} University Alumni Network. All rights reserved.</p>
+          <p>
+            © {new Date().getFullYear()} RIC Alumni Network. All rights
+            reserved.
+          </p>
         </div>
       </div>
     </footer>
-  )
+  );
 }
-

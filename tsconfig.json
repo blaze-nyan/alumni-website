@@ -27,7 +27,13 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts",
-    "server/index.ts"
+    "server/index.ts",
+    "server/controllers/authController.js",
+    "server/middleware/auth.js",
+    "server/routes/users.js",
+    "server/routes/stories.js",
+    "server/routes/events.js",
+    "server/routes/auth.js"
   ],
   "exclude": ["node_modules"]
 }

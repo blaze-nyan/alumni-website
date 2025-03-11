@@ -1,18 +1,18 @@
-import express from "express";
-import cors from "cors";
-import mongoose from "mongoose";
-import dotenv from "dotenv";
-import path from "path";
-import authRoutes from "./routes/auth.js";
-import userRoutes from "./routes/users.js";
-import storyRoutes from "./routes/stories.js";
-import eventRoutes from "./routes/events.js";
-import { errorHandler } from "./middleware/errorHandler.js";
+const express = require("express");
+const cors = require("cors");
+const mongoose = require("mongoose");
+const dotenv = require("dotenv");
+const path = require("path");
+const authRoutes = require("./routes/auth");
+const userRoutes = require("./routes/users");
+const storyRoutes = require("./routes/stories");
+const eventRoutes = require("./routes/events");
+const { errorHandler } = require("./middleware/errorHandler");
 
-dotenv.config();
+dotenv.config({ path: ".env.local" });
 
 const app = express();
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 5300;
 
 // Middleware
 app.use(cors());
@@ -33,13 +33,13 @@ app.use(errorHandler);
 
 // Connect to MongoDB
 mongoose
-  .connect(process.env.MONGODB_URI as string)
+  .connect(process.env.MONGODB_URL)
   .then(() => {
     console.log("Connected to MongoDB");
     app.listen(PORT, () => {
       console.log(`Server running on port ${PORT}`);
     });
   })
-  .catch((error) => {
+  .catch((error: any) => {
     console.error("MongoDB connection error:", error);
   });
