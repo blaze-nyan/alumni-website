@@ -34,9 +34,7 @@ export default function Header() {
               width={40}
               height={40}
             />
-            <span className="text-2xl font-bold text-primary">
-              RIC Alumni Network
-            </span>
+            <span className="text-2xl font-bold text-primary">RIC Alumni</span>
           </Link>
         </div>
 
