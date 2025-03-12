@@ -1,48 +1,40 @@
-"use client"
+"use client";
 
-import { useEffect, useState } from "react"
-import Link from "next/link"
-import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Skeleton } from "@/components/ui/skeleton"
-
-type Story = {
-  id: string
-  title: string
-  description: string
-  author: {
-    id: string
-    firstname: string
-    lastname: string
-    profileImage?: string
-  }
-  createdAt: string
-  mediaIds: string[]
-  mediaUrls?: string[]
-}
+import { useEffect, useState } from "react";
+import Link from "next/link";
+import { Button } from "./ui/button";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+} from "@/components/ui/card";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Skeleton } from "@/components/ui/skeleton";
+import { getFeaturedStories, type Story } from "@/lib/api/stories";
 
 export default function FeaturedStories() {
-  const [stories, setStories] = useState<Story[]>([])
-  const [loading, setLoading] = useState(true)
+  const [stories, setStories] = useState<Story[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchStories = async () => {
       try {
-        const response = await fetch("/api/stories/featured")
-        if (!response.ok) {
-          throw new Error("Failed to fetch stories")
-        }
-        const data = await response.json()
-        setStories(data)
-      } catch (error) {
-        console.error("Error fetching stories:", error)
+        setLoading(true);
+        const data = await getFeaturedStories();
+        setStories(data);
+        setError(null);
+      } catch (err) {
+        console.error("Error fetching stories:", err);
+        setError("Failed to load featured stories");
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
-    }
+    };
 
-    fetchStories()
-  }, [])
+    fetchStories();
+  }, []);
 
   if (loading) {
     return (
@@ -69,14 +61,26 @@ export default function FeaturedStories() {
           </Card>
         ))}
       </div>
-    )
+    );
   }
 
-  // For demo purposes, if no stories are fetched yet
-  const demoStories: Story[] =
+  if (error) {
+    return (
+      <div className="p-6 text-center">
+        <p className="text-destructive">{error}</p>
+        <Button className="mt-4" onClick={() => window.location.reload()}>
+          Try Again
+        </Button>
+      </div>
+    );
+  }
+
+  // Fallback to demo data if no stories are available
+  const displayStories =
     stories.length > 0
       ? stories
       : [
+          // Your existing demo stories as fallback
           {
             id: "1",
             title: "From Campus to CEO: My Journey",
@@ -86,47 +90,21 @@ export default function FeaturedStories() {
               id: "user1",
               firstname: "John",
               lastname: "Smith",
+              username: "jsmith",
               profileImage: "/placeholder.svg?height=40&width=40",
             },
             createdAt: new Date().toISOString(),
             mediaIds: ["media1"],
             mediaUrls: ["/placeholder.svg?height=200&width=400"],
+            likes: 42,
+            comments: 12,
           },
-          {
-            id: "2",
-            title: "Breaking Barriers in Medical Research",
-            description:
-              "My research team just received a major grant to continue our work on cancer treatment. I credit my university professors for inspiring this path.",
-            author: {
-              id: "user2",
-              firstname: "Sarah",
-              lastname: "Johnson",
-              profileImage: "/placeholder.svg?height=40&width=40",
-            },
-            createdAt: new Date(Date.now() - 86400000).toISOString(),
-            mediaIds: ["media2"],
-            mediaUrls: ["/placeholder.svg?height=200&width=400"],
-          },
-          {
-            id: "3",
-            title: "Building Schools Across Africa",
-            description:
-              "My nonprofit has built 15 schools in rural communities. The leadership skills I gained during my university years were instrumental to this success.",
-            author: {
-              id: "user3",
-              firstname: "Michael",
-              lastname: "Wong",
-              profileImage: "/placeholder.svg?height=40&width=40",
-            },
-            createdAt: new Date(Date.now() - 172800000).toISOString(),
-            mediaIds: ["media3"],
-            mediaUrls: ["/placeholder.svg?height=200&width=400"],
-          },
-        ]
+          // Add other demo stories if needed
+        ];
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-      {demoStories.map((story) => (
+      {displayStories.map((story) => (
         <Link href={`/stories/${story.id}`} key={story.id}>
           <Card className="h-full hover:shadow-md transition-shadow">
             {story.mediaUrls && story.mediaUrls.length > 0 && (
@@ -142,7 +120,9 @@ export default function FeaturedStories() {
               <h3 className="text-xl font-bold">{story.title}</h3>
             </CardHeader>
             <CardContent>
-              <p className="text-muted-foreground line-clamp-3">{story.description}</p>
+              <p className="text-muted-foreground line-clamp-3">
+                {story.description}
+              </p>
             </CardContent>
             <CardFooter>
               <div className="flex items-center gap-2">
@@ -160,7 +140,9 @@ export default function FeaturedStories() {
                   <p className="text-sm font-medium">
                     {story.author.firstname} {story.author.lastname}
                   </p>
-                  <p className="text-xs text-muted-foreground">{new Date(story.createdAt).toLocaleDateString()}</p>
+                  <p className="text-xs text-muted-foreground">
+                    {new Date(story.createdAt).toLocaleDateString()}
+                  </p>
                 </div>
               </div>
             </CardFooter>
@@ -168,6 +150,5 @@ export default function FeaturedStories() {
         </Link>
       ))}
     </div>
-  )
+  );
 }
-

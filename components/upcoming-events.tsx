@@ -1,55 +1,41 @@
-"use client"
+"use client";
 
-import { useEffect, useState } from "react"
-import Link from "next/link"
-import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Calendar, MapPin, Users } from "lucide-react"
-import { Skeleton } from "@/components/ui/skeleton"
-import { Badge } from "@/components/ui/badge"
-
-type Event = {
-  id: string
-  title: string
-  description: string
-  author: {
-    id: string
-    firstname: string
-    lastname: string
-    profileImage?: string
-  }
-  calendar: {
-    date: string
-    location: string
-  }
-  attendees: string[]
-  createdAt: string
-  mediaIds: string[]
-  mediaUrls?: string[]
-}
+import { useEffect, useState } from "react";
+import Link from "next/link";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Calendar, MapPin, Users } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Badge } from "@/components/ui/badge";
+import { getUpcomingEvents, type Event } from "@/lib/api/events";
 
 export default function UpcomingEvents() {
-  const [events, setEvents] = useState<Event[]>([])
-  const [loading, setLoading] = useState(true)
+  const [events, setEvents] = useState<Event[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchEvents = async () => {
       try {
-        const response = await fetch("/api/events/upcoming")
-        if (!response.ok) {
-          throw new Error("Failed to fetch events")
-        }
-        const data = await response.json()
-        setEvents(data)
-      } catch (error) {
-        console.error("Error fetching events:", error)
+        setLoading(true);
+        const data = await getUpcomingEvents();
+        setEvents(data);
+        setError(null);
+      } catch (err) {
+        console.error("Error fetching events:", err);
+        setError("Failed to load upcoming events");
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
-    }
+    };
 
-    fetchEvents()
-  }, [])
+    fetchEvents();
+  }, []);
 
   if (loading) {
     return (
@@ -76,14 +62,26 @@ export default function UpcomingEvents() {
           </Card>
         ))}
       </div>
-    )
+    );
   }
 
-  // For demo purposes, if no events are fetched yet
-  const demoEvents: Event[] =
+  if (error) {
+    return (
+      <div className="p-6 text-center">
+        <p className="text-destructive">{error}</p>
+        <Button className="mt-4" onClick={() => window.location.reload()}>
+          Try Again
+        </Button>
+      </div>
+    );
+  }
+
+  // Fallback to demo data if no events are available
+  const displayEvents =
     events.length > 0
       ? events
       : [
+          // Your existing demo events as fallback
           {
             id: "1",
             title: "Annual Alumni Reunion",
@@ -93,6 +91,7 @@ export default function UpcomingEvents() {
               id: "admin1",
               firstname: "Admin",
               lastname: "User",
+              username: "admin",
               profileImage: "/placeholder.svg?height=40&width=40",
             },
             calendar: {
@@ -104,51 +103,12 @@ export default function UpcomingEvents() {
             mediaIds: ["media1"],
             mediaUrls: ["/placeholder.svg?height=200&width=400"],
           },
-          {
-            id: "2",
-            title: "Tech Industry Networking Night",
-            description:
-              "Connect with alumni working in tech companies. Perfect opportunity for recent graduates looking to break into the industry.",
-            author: {
-              id: "admin1",
-              firstname: "Admin",
-              lastname: "User",
-              profileImage: "/placeholder.svg?height=40&width=40",
-            },
-            calendar: {
-              date: new Date(Date.now() + 604800000).toISOString(), // 1 week from now
-              location: "Innovation Hub, Downtown",
-            },
-            attendees: ["user2", "user4", "user5"],
-            createdAt: new Date(Date.now() - 86400000).toISOString(),
-            mediaIds: ["media2"],
-            mediaUrls: ["/placeholder.svg?height=200&width=400"],
-          },
-          {
-            id: "3",
-            title: "Career Development Workshop",
-            description:
-              "Learn how to enhance your resume, improve interview skills, and navigate the current job market with expert guidance.",
-            author: {
-              id: "admin2",
-              firstname: "Career",
-              lastname: "Services",
-              profileImage: "/placeholder.svg?height=40&width=40",
-            },
-            calendar: {
-              date: new Date(Date.now() + 259200000).toISOString(), // 3 days from now
-              location: "Online (Zoom)",
-            },
-            attendees: ["user1", "user3", "user6", "user7"],
-            createdAt: new Date(Date.now() - 172800000).toISOString(),
-            mediaIds: [],
-            mediaUrls: [],
-          },
-        ]
+          // Add other demo events if needed
+        ];
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-      {demoEvents.map((event) => (
+      {displayEvents.map((event) => (
         <Card key={event.id} className="h-full flex flex-col">
           {event.mediaUrls && event.mediaUrls.length > 0 && (
             <div className="w-full h-48 overflow-hidden">
@@ -162,13 +122,20 @@ export default function UpcomingEvents() {
           <CardHeader>
             <div className="flex justify-between items-start">
               <h3 className="text-xl font-bold">{event.title}</h3>
-              <Badge variant="outline" className="bg-accent/10 text-accent border-accent">
-                {new Date(event.calendar.date) > new Date() ? "Upcoming" : "Past"}
+              <Badge
+                variant="outline"
+                className="bg-accent/10 text-accent border-accent"
+              >
+                {new Date(event.calendar.date) > new Date()
+                  ? "Upcoming"
+                  : "Past"}
               </Badge>
             </div>
           </CardHeader>
           <CardContent className="flex-1">
-            <p className="text-muted-foreground mb-4 line-clamp-2">{event.description}</p>
+            <p className="text-muted-foreground mb-4 line-clamp-2">
+              {event.description}
+            </p>
             <div className="space-y-2">
               <div className="flex items-center gap-2 text-sm">
                 <Calendar className="h-4 w-4 text-primary" />
@@ -201,6 +168,5 @@ export default function UpcomingEvents() {
         </Card>
       ))}
     </div>
-  )
+  );
 }
-

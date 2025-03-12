@@ -11,7 +11,8 @@
     "server": "nodemon --exec ts-node server/index.ts",
     "server:build": "tsc -p tsconfig.server.json",
     "server:start": "node dist/server/index.js",
-    "dev:full": "concurrently \"npm run dev\" \"npm run server\""
+    "dev:full": "concurrently \"npm run dev\" \"npm run server\"",
+    "seed": "node server/seeders/index.js"
   },
   "keywords": [
     "alumni",
