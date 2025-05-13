@@ -22,7 +22,7 @@ type Story = {
     id: string
     name: string
   }
-  status: "published" | "draft" | "archived"
+  status: string
   likes: number
   comments: number
   createdAt: string

@@ -43,11 +43,11 @@ export default function ProfilePage() {
         </TabsList>
 
         <TabsContent value="stories" className="mt-6">
-          <ProfileStories userId={user.id} />
+          <ProfileStories userId={user.userId} />
         </TabsContent>
 
         <TabsContent value="events" className="mt-6">
-          <ProfileEvents userId={user.id} />
+          <ProfileEvents userId={user.userId} />
         </TabsContent>
 
         <TabsContent value="settings" className="mt-6">

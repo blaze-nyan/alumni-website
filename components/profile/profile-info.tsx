@@ -9,8 +9,8 @@ type User = {
   id: string
   username: string
   email: string
-  firstname: string
-  lastname: string
+  firstName: string
+  surName: string
   usertype: "alumni" | "admin"
   profileImage?: string
   createdAt: string
@@ -40,11 +40,11 @@ export default function ProfileInfo({ user }: { user: User }) {
           <Avatar className="h-32 w-32 border-4 border-background">
             <AvatarImage
               src={user.profileImage || "/placeholder.svg?height=128&width=128"}
-              alt={`${user.firstname} ${user.lastname}`}
+              alt={`${user.firstName} ${user.surName}`}
             />
             <AvatarFallback className="text-4xl bg-primary text-primary-foreground">
-              {user.firstname[0]}
-              {user.lastname[0]}
+              {user.firstName[0]}
+              {user.surName[0]}
             </AvatarFallback>
           </Avatar>
           <Button
@@ -60,7 +60,7 @@ export default function ProfileInfo({ user }: { user: User }) {
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <div>
               <h1 className="text-2xl font-bold">
-                {user.firstname} {user.lastname}
+                {user.firstName} {user.surName}
               </h1>
               <p className="text-muted-foreground">@{user.username}</p>
             </div>

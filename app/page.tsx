@@ -115,7 +115,7 @@ export default function Home() {
               </Link>
             </Button>
           </div>
-          <FeaturedStories />
+          {/* <FeaturedStories /> */}
         </div>
       </section>
 
@@ -132,7 +132,7 @@ export default function Home() {
               </Link>
             </Button>
           </div>
-          <UpcomingEvents />
+          {/* <UpcomingEvents /> */}
         </div>
       </section>
 
