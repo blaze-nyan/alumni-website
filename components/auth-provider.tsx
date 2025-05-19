@@ -32,7 +32,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const checkAuth = async () => {
       try {
         const token = localStorage.getItem("token");
-        console.log(token)
+        // console.log(token)
         if (!token) {
           setLoading(false);
           return;
@@ -40,12 +40,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
         // Fetch current user data
         const userData = await getCurrentUser();
-        console.log(userData)
+        // console.log(userData)
         setUser(userData);
       } catch (error) {
-        console.error("Authentication check failed:", error);
+        // console.error("Authentication check failed:", error);
         // Token is invalid or expired
-        console.log(error)
+        // console.log(error)
         localStorage.removeItem("token");
         localStorage.removeItem("refreshToken");
       } finally {
@@ -58,10 +58,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const login = async (email: string, password: string) => {
     try {
-      console.log(email, password)
+      // console.log(email, password)
       setLoading(true);
       const response = await apiLogin({ email, password });
-      console.log(response)
+      // console.log(response)
       localStorage.setItem("token", response.accessToken);
       localStorage.setItem("refreshToken", response.refreshToken);
       setUser(response.foundUser);
@@ -89,7 +89,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signup = async (userData: SignupData) => {
     try {
-      console.log(userData)
+      // console.log(userData)
       setLoading(true);
       const response = await apiSignup({
         username: userData.username,

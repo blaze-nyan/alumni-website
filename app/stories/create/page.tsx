@@ -1,4 +1,3 @@
-// app/stories/create/page.tsx
 "use client"
 
 import { useState } from "react"
@@ -16,7 +15,36 @@ export default function CreateStoryPage() {
     const [title, setTitle] = useState("")
     const [description, setDescription] = useState("")
     const [author, setAuthor] = useState("")
+    const [images, setImages] = useState<File[]>([])
+    const [mediaDataArray, setMediaDataArray] = useState<
+        { dataType: string; base64data: string }[]
+    >([])
     const [isSubmitting, setIsSubmitting] = useState(false)
+
+    // Handle file selection & convert files to base64
+    const handleImagesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (!e.target.files) return
+        const files = Array.from(e.target.files)
+        setImages(files)
+
+        Promise.all(
+        files.map(
+            (file) =>
+            new Promise<{ dataType: string; base64data: string }>((resolve, reject) => {
+                const reader = new FileReader()
+                reader.onload = () => {
+                const base64data = reader.result as string
+                const dataType = file.type.split("/")[0] // e.g. "image"
+                resolve({ dataType, base64data })
+                }
+                reader.onerror = () => reject(new Error("File reading failed"))
+                reader.readAsDataURL(file)
+            })
+        )
+        )
+        .then((results) => setMediaDataArray(results))
+        .catch((err) => console.error("Failed to read files:", err))
+    }
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
@@ -29,9 +57,9 @@ export default function CreateStoryPage() {
             storyData: {
                 title,
                 description,
-                author
+                author,
             },
-            mediaDataArray: [],
+            mediaDataArray,
             }),
         })
 
@@ -59,11 +87,27 @@ export default function CreateStoryPage() {
                 </div>
                 <div>
                 <Label htmlFor="description">Description</Label>
-                <Textarea id="description" value={description} onChange={(e) => setDescription(e.target.value)} required />
+                <Textarea
+                    id="description"
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                    required
+                />
                 </div>
                 <div>
                 <Label htmlFor="author">Author</Label>
                 <Input id="author" value={author} onChange={(e) => setAuthor(e.target.value)} required />
+                </div>
+                <div>
+                <Label htmlFor="media">Upload Images</Label>
+                <Input
+                    id="media"
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    onChange={handleImagesChange}
+                    className="mt-2"
+                />
                 </div>
             </CardContent>
             <CardFooter>

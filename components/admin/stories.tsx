@@ -23,8 +23,8 @@ type Story = {
     name: string
   }
   status: string
-  likes: number
-  comments: number
+  likes: string[]
+  comments: string[]
   createdAt: string
 }
 
@@ -73,8 +73,8 @@ export default function AdminStories() {
       "published",
       "published",
     ][i],
-    likes: Math.floor(Math.random() * 100),
-    comments: Math.floor(Math.random() * 20),
+    likes: [],
+    comments: [],
     createdAt: new Date(Date.now() - i * 86400000 * 7).toISOString(),
   }))
 
@@ -140,8 +140,8 @@ export default function AdminStories() {
                 </TableCell>
                 <TableCell>
                   <div className="flex items-center gap-2">
-                    <span className="text-sm">👍 {story.likes}</span>
-                    <span className="text-sm">💬 {story.comments}</span>
+                    <span className="text-sm">👍 {story.likes.length}</span>
+                    <span className="text-sm">💬 {story.comments.length}</span>
                   </div>
                 </TableCell>
                 <TableCell>{new Date(story.createdAt).toLocaleDateString()}</TableCell>

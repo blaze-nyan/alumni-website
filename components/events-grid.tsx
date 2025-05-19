@@ -18,8 +18,9 @@ type Event = {
   calendar: Date,
   location: string
   attendees: string[]
+  comments: string[]
   createdAt: string
-  mediaIDs: string[]
+  mediaURLs: string[]
 }
 
 export default function EventsGrid() {
@@ -78,7 +79,8 @@ export default function EventsGrid() {
     ][i % 5],
     attendees: Array.from({ length: Math.floor(Math.random() * 50) + 5 }, (_, j) => `user-${j}`),
     createdAt: new Date(Date.now() - i * 86400000).toISOString(),
-    mediaIDs: i % 2 === 0 ? [`media-${i + 1}`] : [],
+    mediaURLs: i % 2 === 0 ? [`media-${i + 1}`] : [],
+    comments: []
   }))
 
   if (loading && page === 1) {

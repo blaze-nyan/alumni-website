@@ -29,7 +29,7 @@ export async function fetchApi(
 
   const token = getAuthToken();
   const refreshToken = getRefreshToken();
-  console.log("TST", endpoint)
+  // console.log("TST", endpoint)
   const headers = {
     ...defaultHeaders,
     ...options.headers,
@@ -41,7 +41,7 @@ export async function fetchApi(
     ...options,
     headers,
   });
-  console.log("TST", endpoint, response)
+  // console.log("TST", endpoint, response)
 
   // Handle 401 Unauthorized - log out user
   if (response.status === 401) {
@@ -51,7 +51,7 @@ export async function fetchApi(
       // window.location.href = '/login';
     }
   }
-  console.log("TST", endpoint, response)
+  // console.log("TST", endpoint, response)
 
   const data = await response.json();
 

@@ -15,8 +15,11 @@ type Story = {
   title: string
   description: string
   author: string
+  authorId: number
   createdAt: string
-  mediaIDs: string[]
+  mediaURLs: string[]
+  likes: string[]
+  comments: string[]
 }
 
 export default function StoriesGrid() {
@@ -32,7 +35,7 @@ export default function StoriesGrid() {
         setLoading(true)
         // In a real app, you would fetch from your API with pagination
         const data = await fetchApi(`/stories`)
-        console.log(data)
+        // console.log(data)
         if (page === 1) {
           setStories(data)
         } else {
@@ -67,10 +70,7 @@ export default function StoriesGrid() {
       "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
     author: ["John", "Sarah", "Michael", "Emma", "David", "Lisa", "Robert", "Jennifer", "Thomas"][i % 9],
     createdAt: new Date(Date.now() - i * 86400000 * 3).toISOString(),
-    mediaIds: [`media-${i + 1}`],
-    mediaUrls: [`/placeholder.svg?height=200&width=400&text=Story ${i + 1}`],
-    likes: Math.floor(Math.random() * 100),
-    comments: Math.floor(Math.random() * 20),
+    mediaURLs: [`media-${i + 1}`]
   }))
 
   if (loading && page === 1) {
