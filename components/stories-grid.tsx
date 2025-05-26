@@ -18,8 +18,8 @@ type Story = {
   authorId: number
   createdAt: string
   mediaURLs: string[]
-  likes: string[]
-  comments: string[]
+  likeCount: number
+  commentCount: number
 }
 
 export default function StoriesGrid() {
@@ -70,7 +70,9 @@ export default function StoriesGrid() {
       "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
     author: ["John", "Sarah", "Michael", "Emma", "David", "Lisa", "Robert", "Jennifer", "Thomas"][i % 9],
     createdAt: new Date(Date.now() - i * 86400000 * 3).toISOString(),
-    mediaURLs: [`media-${i + 1}`]
+    mediaURLs: [`media-${i + 1}`],
+    likeCount: 0,
+    commentCount: 0
   }))
 
   if (loading && page === 1) {
@@ -134,11 +136,11 @@ export default function StoriesGrid() {
                 <div className="flex items-center gap-3">
                   <button className="flex items-center gap-1 text-muted-foreground hover:text-primary">
                     <Heart className="h-4 w-4" />
-                    <span className="text-xs">{1}</span>
+                    <span className="text-xs">{story.likeCount}</span>
                   </button>
                   <button className="flex items-center gap-1 text-muted-foreground hover:text-primary">
                     <MessageSquare className="h-4 w-4" />
-                    <span className="text-xs">{1}</span>
+                    <span className="text-xs">{story.commentCount}</span>
                   </button>
                   <button className="text-muted-foreground hover:text-primary">
                     <Share2 className="h-4 w-4" />

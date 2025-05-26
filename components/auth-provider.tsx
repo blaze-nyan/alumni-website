@@ -27,6 +27,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const { toast } = useToast();
 
+
   useEffect(() => {
     // Check if user is logged in
     const checkAuth = async () => {

@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useContext, useState } from "react"
 import { useRouter } from "next/navigation"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
@@ -8,13 +8,14 @@ import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/components/ui/card"
 import { fetchApi } from "@/lib/api/client"
+import { AuthContext, AuthProvider } from "@/components/auth-provider"
 
 export default function CreateEventPage() {
     const router = useRouter()
+	const { user } = useContext(AuthContext);
 
     const [title, setTitle] = useState("")
     const [description, setDescription] = useState("")
-    const [author, setAuthor] = useState("")
     const [calendar, setCalendar] = useState("")
     const [location, setLocation] = useState("")
     const [mediaDataArray, setMediaDataArray] = useState<
@@ -49,7 +50,7 @@ export default function CreateEventPage() {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
         setIsSubmitting(true)
-
+        const author = user.userId;
         try {
         const res = await fetchApi("/events", {
             method: "POST",
@@ -95,10 +96,6 @@ export default function CreateEventPage() {
                     onChange={(e) => setDescription(e.target.value)}
                     required
                 />
-                </div>
-                <div>
-                <Label htmlFor="author">Author</Label>
-                <Input id="author" value={author} onChange={(e) => setAuthor(e.target.value)} required />
                 </div>
                 <div>
                 <Label htmlFor="calendar">Event Date & Time</Label>
