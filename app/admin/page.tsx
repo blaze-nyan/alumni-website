@@ -14,7 +14,7 @@ export default function AdminPage() {
   const router = useRouter()
 
   useEffect(() => {
-    if (!loading && (!user || user.usertype !== "admin")) {
+    if (!loading && (!user || user.userType !== "admin")) {
       router.push("/")
     }
   }, [user, loading, router])
@@ -27,7 +27,7 @@ export default function AdminPage() {
     )
   }
 
-  if (!user || user.usertype !== "admin") {
+  if (!user || user.userType !== "admin") {
     return null
   }
 

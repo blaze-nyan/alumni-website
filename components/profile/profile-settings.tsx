@@ -16,9 +16,9 @@ type User = {
   id: string
   username: string
   email: string
-  firstname: string
-  lastname: string
-  usertype: "alumni" | "admin"
+  firstName: string
+  surName: string
+  userType: "alumni" | "admin"
   profileImage?: string
 }
 
@@ -27,8 +27,8 @@ export default function ProfileSettings({ user }: { user: User }) {
   const { toast } = useToast()
 
   const [profileData, setProfileData] = useState({
-    firstname: user.firstname,
-    lastname: user.lastname,
+    firstName: user.firstName,
+    surName: user.surName,
     email: user.email,
     bio: "Class of 2018 graduate with a degree in Computer Science. Currently working as a Senior Software Engineer at Tech Corp.",
     location: "San Francisco, CA",
@@ -134,11 +134,11 @@ export default function ProfileSettings({ user }: { user: User }) {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="firstname">First name</Label>
-                  <Input id="firstname" name="firstname" value={profileData.firstname} onChange={handleProfileChange} />
+                  <Input id="firstname" name="firstname" value={profileData.firstName} onChange={handleProfileChange} />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="lastname">Last name</Label>
-                  <Input id="lastname" name="lastname" value={profileData.lastname} onChange={handleProfileChange} />
+                  <Input id="lastname" name="lastname" value={profileData.surName} onChange={handleProfileChange} />
                 </div>
               </div>
 

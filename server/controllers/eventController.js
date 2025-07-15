@@ -11,7 +11,7 @@ exports.createEvent = async (req, res) => {
     const userId = req.user._id;
 
     // Check if user is admin
-    if (req.user.usertype !== "admin") {
+    if (req.user.userType !== "admin") {
       return res
         .status(403)
         .json({ message: "Not authorized to create events" });
@@ -192,7 +192,7 @@ exports.updateEvent = async (req, res) => {
     const { title, description, date, location, mediaFiles } = req.body;
 
     // Check if user is admin
-    if (req.user.usertype !== "admin") {
+    if (req.user.userType !== "admin") {
       return res
         .status(403)
         .json({ message: "Not authorized to update events" });
@@ -245,7 +245,7 @@ exports.updateEvent = async (req, res) => {
 exports.deleteEvent = async (req, res) => {
   try {
     // Check if user is admin
-    if (req.user.usertype !== "admin") {
+    if (req.user.userType !== "admin") {
       return res
         .status(403)
         .json({ message: "Not authorized to delete events" });

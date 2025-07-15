@@ -111,6 +111,17 @@ export default function StoriesGrid() {
         {(stories.length > 0 ? stories : demoStories).map((story) => (
           <Card key={story.successStoryId} className="h-full flex flex-col">
             <CardHeader className="pb-2">
+              {story.mediaURLs && story.mediaURLs.length > 0 ? (
+                <div className="h-48 w-full overflow-hidden rounded-t-md">
+                  <img
+                    src={story.mediaURLs[0]}
+                    alt="Story media preview"
+                    className="h-full w-full object-cover"
+                  />
+                </div>
+              ) : (
+                <div className="h-48 w-full bg-muted rounded-t-md" />
+              )}
               <Link href={`/stories/${story.successStoryId}`} className="hover:underline">
                 <h3 className="text-xl font-bold">{story.title}</h3>
               </Link>
@@ -123,7 +134,7 @@ export default function StoriesGrid() {
                 <div className="flex items-center gap-2">
                   <Avatar className="h-8 w-8">
                     <AvatarFallback className="bg-primary text-primary-foreground">
-                      {story.author}
+                      {story.author.charAt(0).toUpperCase()}
                     </AvatarFallback>
                   </Avatar>
                   <div>
@@ -158,15 +169,7 @@ export default function StoriesGrid() {
         </div>
       )}
 
-      {hasMore && !loading && (
-        <div className="flex justify-center">
-          <Button variant="outline" onClick={() => setPage((prev) => prev + 1)}>
-            Load More
-          </Button>
-        </div>
-      )}
-
-      {user && (
+      {user?.userType === "admin" && (
         <div className="fixed bottom-6 right-6">
           <Button size="lg" className="rounded-full h-14 w-14 shadow-lg" asChild>
             <Link href="/stories/create">

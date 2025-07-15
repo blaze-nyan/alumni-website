@@ -105,13 +105,23 @@ export default function EventsGrid() {
       </div>
     )
   }
-
   return (
     <div className="space-y-8">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {(events.length > 0 ? events : demoEvents).map((event) => (
           <Card key={event.eventId} className="h-full flex flex-col">
             <CardHeader className="pb-2">
+              {event.mediaURLs && event.mediaURLs.length > 0 ? (
+                <div className="h-48 w-full overflow-hidden rounded-t-md">
+                  <img
+                    src={event.mediaURLs[0]}
+                    alt="Story media preview"
+                    className="h-full w-full object-cover"
+                  />
+                </div>
+              ) : (
+                <div className="h-48 w-full bg-muted rounded-t-md" />
+              )}
               <div className="flex justify-between items-start">
                 <Link href={`/events/${event.eventId}`} className="hover:underline">
                   <h3 className="text-xl font-bold">{event.title}</h3>
@@ -171,15 +181,7 @@ export default function EventsGrid() {
         </div>
       )}
 
-      {hasMore && !loading && (
-        <div className="flex justify-center">
-          <Button variant="outline" onClick={() => setPage((prev) => prev + 1)}>
-            Load More
-          </Button>
-        </div>
-      )}
-
-      {user?.usertype === "admin" && (
+      {user?.userType === "admin" && (
         <div className="fixed bottom-6 right-6">
           <Button size="lg" className="rounded-full h-14 w-14 shadow-lg" asChild>
             <Link href="/events/create">

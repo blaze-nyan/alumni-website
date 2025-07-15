@@ -11,37 +11,62 @@ type User = {
   email: string
   firstName: string
   surName: string
-  usertype: "alumni" | "admin"
+  userType: "alumni" | "admin"
   profileImage?: string
   createdAt: string
   updatedAt: string
+  profileData?: {
+    bio?: string;
+    location?: string;
+    graduationYear?: string;
+    degree?: string;
+    company?: string;
+    position?: string;
+    socialLinks?: {
+      linkedin?: string;
+      twitter?: string;
+      github?: string;
+    };
+  };
 }
 
 export default function ProfileInfo({ user }: { user: User }) {
-  // In a real app, you would fetch additional profile data from your API
-  const profileData = {
-    bio: "Class of 2018 graduate with a degree in Computer Science. Currently working as a Senior Software Engineer at Tech Corp.",
-    location: "San Francisco, CA",
-    graduationYear: "2018",
-    degree: "Bachelor of Science in Computer Science",
-    company: "Tech Corp",
-    position: "Senior Software Engineer",
+
+  const placeholder = {
+    bio: "Class of 2025 graduate with a degree in Computer Science. Currently working as a Senior Software Engineer at Tech Corp.",
+    location: "Australia",
+    graduationYear: "2025",
+    degree: "ICT",
+    company: "ABC Company",
+    position: "Fullstack Engineer",
     socialLinks: {
       linkedin: "https://linkedin.com/in/username",
       twitter: "https://twitter.com/username",
       github: "https://github.com/username",
     },
-  }
+  };
+
+  const profileData = {
+    bio: user.profileData?.bio || placeholder.bio,
+    location: user.profileData?.location || placeholder.location,
+    graduationYear: user.profileData?.graduationYear || placeholder.graduationYear,
+    degree: user.profileData?.degree || placeholder.degree,
+    company: user.profileData?.company || placeholder.company,
+    position: user.profileData?.position || placeholder.position,
+    socialLinks: {
+      linkedin: user.profileData?.socialLinks?.linkedin || placeholder.socialLinks.linkedin,
+      twitter: user.profileData?.socialLinks?.twitter || placeholder.socialLinks.twitter,
+      github: user.profileData?.socialLinks?.github || placeholder.socialLinks.github,
+    },
+  };
+
+  console.log(user.firstName)
 
   return (
     <div className="space-y-6">
       <div className="flex flex-col md:flex-row gap-6 items-start">
         <div className="relative">
           <Avatar className="h-32 w-32 border-4 border-background">
-            <AvatarImage
-              src={user.profileImage || "/placeholder.svg?height=128&width=128"}
-              alt={`${user.firstName} ${user.surName}`}
-            />
             <AvatarFallback className="text-4xl bg-primary text-primary-foreground">
               {user.firstName[0]}
               {user.surName[0]}
@@ -65,7 +90,6 @@ export default function ProfileInfo({ user }: { user: User }) {
               <p className="text-muted-foreground">@{user.username}</p>
             </div>
             <div className="flex gap-2">
-              <Button variant="outline">Edit Profile</Button>
               <Button>Share Profile</Button>
             </div>
           </div>
@@ -105,18 +129,14 @@ export default function ProfileInfo({ user }: { user: User }) {
 
       <Card>
         <CardContent className="p-6">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="text-center">
               <p className="text-3xl font-bold">12</p>
-              <p className="text-muted-foreground">Stories</p>
+              <p className="text-muted-foreground">Stories Featured</p>
             </div>
             <div className="text-center">
               <p className="text-3xl font-bold">8</p>
               <p className="text-muted-foreground">Events Attended</p>
-            </div>
-            <div className="text-center">
-              <p className="text-3xl font-bold">156</p>
-              <p className="text-muted-foreground">Connections</p>
             </div>
           </div>
         </CardContent>

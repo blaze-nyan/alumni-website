@@ -11,7 +11,7 @@ const { v4: uuidv4 } = require("uuid");
 exports.getUsers = async (req, res) => {
   try {
     // Check if user is admin
-    if (req.user.usertype !== "admin") {
+    if (req.user.userType !== "admin") {
       return res
         .status(403)
         .json({ message: "Not authorized to access user list" });
@@ -127,7 +127,7 @@ exports.updateUserProfile = async (req, res) => {
       email: updatedUser.email,
       firstname: updatedUser.firstname,
       lastname: updatedUser.lastname,
-      usertype: updatedUser.usertype,
+      userType: updatedUser.userType,
       profileImage: updatedUser.profileImage,
       createdAt: updatedUser.createdAt,
       updatedAt: updatedUser.updatedAt,
@@ -194,7 +194,7 @@ exports.getAlumniDirectory = async (req, res) => {
 
     // Find alumni users
     const alumni = await User.find({
-      usertype: "alumni",
+      userType: "alumni",
       status: "active",
       ...searchQuery,
     })
@@ -205,7 +205,7 @@ exports.getAlumniDirectory = async (req, res) => {
 
     // Get total count for pagination
     const total = await User.countDocuments({
-      usertype: "alumni",
+      userType: "alumni",
       status: "active",
       ...searchQuery,
     });
@@ -232,7 +232,7 @@ exports.toggleFriend = async (req, res) => {
     const friendId = req.params.id;
 
     // Check if friend exists and is an alumni
-    const friend = await User.findOne({ _id: friendId, usertype: "alumni" });
+    const friend = await User.findOne({ _id: friendId, userType: "alumni" });
 
     if (!friend) {
       return res
@@ -282,7 +282,7 @@ exports.updateUserStatus = async (req, res) => {
     const { status } = req.body;
 
     // Check if user is admin
-    if (req.user.usertype !== "admin") {
+    if (req.user.userType !== "admin") {
       return res
         .status(403)
         .json({ message: "Not authorized to update user status" });

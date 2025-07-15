@@ -32,7 +32,7 @@ const users = [
     firstname: "Admin",
     lastname: "User",
     password: "password123",
-    usertype: "admin",
+    userType: "admin",
     status: "active",
   },
   {
@@ -41,7 +41,7 @@ const users = [
     firstname: "John",
     lastname: "Smith",
     password: "password123",
-    usertype: "alumni",
+    userType: "alumni",
     status: "active",
   },
   {
@@ -50,7 +50,7 @@ const users = [
     firstname: "Sarah",
     lastname: "Johnson",
     password: "password123",
-    usertype: "alumni",
+    userType: "alumni",
     status: "active",
   },
   {
@@ -59,7 +59,7 @@ const users = [
     firstname: "Michael",
     lastname: "Wong",
     password: "password123",
-    usertype: "alumni",
+    userType: "alumni",
     status: "active",
   },
   {
@@ -68,7 +68,7 @@ const users = [
     firstname: "Emma",
     lastname: "Davis",
     password: "password123",
-    usertype: "alumni",
+    userType: "alumni",
     status: "active",
   },
 ];
@@ -211,7 +211,7 @@ async function seedDatabase() {
 
     // Create alumni profiles
     const alumniUsers = createdUsers.filter(
-      (user) => user.usertype === "alumni"
+      (user) => user.userType === "alumni"
     );
     console.log(`Found ${alumniUsers.length} alumni users`);
 
@@ -240,7 +240,7 @@ async function seedDatabase() {
     console.log("Media created");
 
     // Find admin user
-    const adminUser = createdUsers.find((user) => user.usertype === "admin");
+    const adminUser = createdUsers.find((user) => user.userType === "admin");
     if (!adminUser) {
       throw new Error("Admin user not found!");
     }

@@ -1,20 +1,18 @@
-// app/events/[eventId]/page.tsx
-
 "use client";
 
 import React, { useState, useEffect, useContext } from "react";
 import { fetchApi } from '@/lib/api/client';
 import Image from "next/image";
-    import {
+import {
     Dialog,
     DialogContent,
     DialogHeader,
     DialogTitle,
     DialogClose,
 } from "@/components/ui/dialog";
-
 import { Button } from "@/components/ui/button";
 import { AuthContext } from "@/components/auth-provider";
+
 interface Props {
     params: { eventId: string };
 }
@@ -52,18 +50,12 @@ function EventPage({ params }: Props) {
 
     const handleRegister = async () => {
         try {
-            const res = await fetchApi(`/events/${eventId}/attend`, {
+            await fetchApi(`/events/${eventId}/attend`, {
                 method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    userId: auth.user.userId,
-                }),
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ userId: auth.user.userId }),
             });
-
-            console.log("Registered successfully:", res);
-            await fetchData(); // Refresh event data
+            await fetchData();
         } catch (err: any) {
             console.error("Failed to register:", err.message);
         }
@@ -71,111 +63,124 @@ function EventPage({ params }: Props) {
 
     const handleUnregister = async () => {
         try {
-            const res = await fetchApi(`/events/${eventId}/unattend`, {
+            await fetchApi(`/events/${eventId}/unattend`, {
                 method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    userId: auth.user.userId,
-                }),
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ userId: auth.user.userId }),
             });
-
-            console.log("Unregistered successfully:", res);
-            await fetchData(); // Refresh event data
+            await fetchData();
         } catch (err: any) {
-            console.error("Failed to register:", err.message);
+            console.error("Failed to unregister:", err.message);
         }
     };
 
-    if (loading)
+    if (loading) {
         return (
             <div className="flex justify-center items-center h-[400px]">
-                <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+                <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin" />
             </div>
         );
-    if (!event) return <div className="text-center text-red-500 mt-10">Event not found.</div>;
-    console.log(auth.user)
+    }
+
+    if (!event) {
+        return (
+            <div className="text-center text-red-500 mt-10">
+                Event not found.
+            </div>
+        );
+    }
+
     const isAttending = auth?.user && event.attendees.includes(auth.user.username);
 
     return (
-    <div className="max-w-3xl mx-auto p-6">
-        <h1 className="text-3xl font-bold mb-2">{event.title}</h1>
-        <p className="text-gray-600 mb-4">
-            By {event.author} • {new Date(event.calendar).toLocaleString()}
-        </p>
-        <p className="mb-6">{event.description}</p>
+        <div className="max-w-4xl mx-auto px-4 py-10 space-y-6">
+            {/* Header */}
+            <div>
+                <h1 className="text-4xl font-extrabold mb-2">{event.title}</h1>
+                <p className="text-gray-500 text-sm">
+                    By <span className="font-semibold">Admin</span> •{" "}
+                    {new Date(event.calendar).toLocaleString()}
+                </p>
+            </div>
 
-        <div className="mb-4">
-            <strong>Location:</strong> {event.location}
-        </div>
+            {/* Description */}
+            <p className="text-lg text-gray-700">{event.description}</p>
 
-        {event.mediaURLs.length > 0 && (
-            <div className="mb-4">
-            <div className="flex space-x-4 overflow-x-auto scrollbar-thin scrollbar-thumb-rounded scrollbar-thumb-gray-400 p-4">
-                {event.mediaURLs.map((url: string, index: number) => (
-                <div
-                    key={index}
-                    className="relative flex-shrink-0 w-80 h-80 overflow-hidden rounded-md cursor-pointer"
-                    onClick={() => setSelectedImage(url)}
-                >
-                    <Image
-                    src={url}
-                    alt={`Event media ${index + 1}`}
-                    fill
-                    style={{ objectFit: "cover", transition: "transform 0.3s ease" }}
-                    sizes="(max-width: 768px) 100vw, 50vw"
-                    priority={index === 0}
-                    className="hover:scale-105"
-                    />
+            {/* Location */}
+            <div className="text-gray-600">
+                <span className="font-semibold">Location:</span> {event.location}
+            </div>
+
+            {/* Media Gallery */}
+            {event.mediaURLs.length > 0 && (
+                <div className="space-y-2">
+                    <h2 className="text-lg font-semibold">Media</h2>
+                    <div className="flex overflow-x-auto gap-4 scrollbar-thin scrollbar-thumb-gray-400 py-2">
+                        {event.mediaURLs.map((url: string, index: number) => (
+                            <div
+                                key={index}
+                                className="relative flex-shrink-0 w-72 h-72 rounded-lg overflow-hidden shadow hover:scale-[1.02] transition-transform duration-300 cursor-pointer"
+                                onClick={() => setSelectedImage(url)}
+                            >
+                                <Image
+                                    src={url}
+                                    alt={`Event media ${index + 1}`}
+                                    fill
+                                    style={{ objectFit: "cover" }}
+                                    className="rounded-lg"
+                                    sizes="(max-width: 768px) 100vw, 33vw"
+                                    priority={index === 0}
+                                />
+                            </div>
+                        ))}
+                    </div>
                 </div>
-                ))}
-            </div>
-            </div>
-        )}
-
-        <div className="mb-4">
-            <strong>Attendees:</strong>
-            <ul className="list-disc ml-6">
-            {event.attendees.length > 0 ? (
-                event.attendees.map((attendee: string, index: number) => (
-                <li key={index}>{attendee}</li>
-                ))
-            ) : (
-                <li>No attendees yet.</li>
             )}
-            </ul>
-        </div>
 
-        {/* Show Register or Unregister based on attendance */}
-        <div className="mb-6">
-            {isAttending ? (
-            <Button variant="destructive" onClick={handleUnregister}>
-                Unregister from this event
-            </Button>
-            ) : (
-            <Button onClick={handleRegister}>Register for this event</Button>
-            )}
-        </div>
+            {/* Attendees */}
+            <div>
+                <h2 className="text-lg font-semibold mb-1">Attendees</h2>
+                <ul className="list-disc ml-6 text-gray-700">
+                    {event.attendees.length > 0 ? (
+                        event.attendees.map((attendee: string, index: number) => (
+                            <li key={index}>{attendee}</li>
+                        ))
+                    ) : (
+                        <li>No attendees yet.</li>
+                    )}
+                </ul>
+            </div>
 
-        <Dialog open={!!selectedImage} onOpenChange={() => setSelectedImage(null)}>
-            <DialogContent className="max-w-4xl max-h-[90vh] p-3">
-            <DialogHeader className="p-3">
-                <DialogTitle>Image Preview</DialogTitle>
-                <DialogClose className="absolute right-2 top-2" />
-            </DialogHeader>
-            <div className="relative w-full h-[80vh]">
-                {selectedImage && (
-                <Image
-                    src={selectedImage}
-                    alt="Selected media"
-                    fill
-                    style={{ objectFit: "contain" }}
-                />
+            {/* Register / Unregister Button */}
+            <div>
+                {isAttending ? (
+                    <Button variant="destructive" onClick={handleUnregister}>
+                        Unregister from this event
+                    </Button>
+                ) : (
+                    <Button onClick={handleRegister}>Register for this event</Button>
                 )}
             </div>
-            </DialogContent>
-        </Dialog>
-    </div>
+
+            {/* Image Dialog */}
+            <Dialog open={!!selectedImage} onOpenChange={() => setSelectedImage(null)}>
+                <DialogContent className="max-w-5xl p-0 overflow-hidden">
+                    <DialogHeader className="p-4 border-b">
+                        <DialogTitle className="text-lg">Image Preview</DialogTitle>
+                        <DialogClose className="absolute right-4 top-4" />
+                    </DialogHeader>
+                    <div className="relative w-full h-[75vh] bg-black">
+                        {selectedImage && (
+                            <Image
+                                src={selectedImage}
+                                alt="Selected media"
+                                fill
+                                style={{ objectFit: "contain" }}
+                            />
+                        )}
+                    </div>
+                </DialogContent>
+            </Dialog>
+        </div>
     );
 }

@@ -22,7 +22,7 @@ type User = {
   email: string
   firstName: string
   surName: string
-  usertype: "alumni" | "admin"
+  userType: "alumni" | "admin"
   status: string
   createdAt: string
   profileImage?: string
@@ -41,7 +41,7 @@ export default function AdminUsers() {
 
     firstName: ["John", "Sarah", "Michael", "Emma", "David", "Lisa", "Robert", "Jennifer", "Thomas", "Jane"][i],
     surName: ["Smith", "Johnson", "Wong", "Davis", "Miller", "Wilson", "Brown", "Taylor", "Anderson", "Doe"][i],
-    usertype: i === 0 || i === 5 ? "admin" : "alumni",
+    userType: i === 0 || i === 5 ? "admin" : "alumni",
     status: ["active", "active", "active", "inactive", "active", "active", "pending", "active", "active", "inactive"][
       i
     ],
@@ -109,7 +109,7 @@ export default function AdminUsers() {
                 </TableCell>
                 <TableCell>{user.email}</TableCell>
                 <TableCell>
-                  <Badge variant={user.usertype === "admin" ? "default" : "outline"}>{user.usertype}</Badge>
+                  <Badge variant={user.userType === "admin" ? "default" : "outline"}>{user.userType}</Badge>
                 </TableCell>
                 <TableCell>
                   <Badge

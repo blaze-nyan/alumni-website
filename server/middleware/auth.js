@@ -33,7 +33,7 @@ const protect = async (req, res, next) => {
 };
 
 const admin = (req, res, next) => {
-  if (req.user && req.user.usertype === "admin") {
+  if (req.user && req.user.userType === "admin") {
     next();
   } else {
     return res.status(403).json({ message: "Not authorized as an admin" });
