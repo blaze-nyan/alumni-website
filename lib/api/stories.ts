@@ -6,13 +6,15 @@ export interface Story {
   id?: string;
   title: string;
   description: string;
-  author: {
-    id: string;
-    firstname: string;
-    lastname: string;
-    username: string;
-    profileImage?: string;
-  } | string;
+  author:
+    | {
+        id: string;
+        firstname: string;
+        lastname: string;
+        username: string;
+        profileImage?: string;
+      }
+    | string;
   authorId?: number;
   mediaIds?: string[];
   mediaUrls?: string[];
@@ -116,7 +118,9 @@ export async function likeStory(
   });
 }
 
-export async function getLikeCount(storyId: string): Promise<{ likes: number }> {
+export async function getLikeCount(
+  storyId: string
+): Promise<{ likes: number }> {
   return fetchApi(`/stories/${storyId}/likes`);
 }
 
@@ -152,13 +156,17 @@ export async function getPendingStories(): Promise<Story[]> {
   return fetchApi("/stories/unapproved");
 }
 
-export async function approveStory(storyId: string): Promise<{ message: string }> {
+export async function approveStory(
+  storyId: string
+): Promise<{ message: string }> {
   return fetchApi(`/stories/${storyId}/approve`, {
     method: "POST",
   });
 }
 
-export async function rejectStory(storyId: string): Promise<{ message: string }> {
+export async function rejectStory(
+  storyId: string
+): Promise<{ message: string }> {
   return fetchApi(`/stories/${storyId}`, {
     method: "DELETE",
   });

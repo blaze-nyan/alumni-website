@@ -15,11 +15,11 @@ const nextConfig = {
         poll: 1000,
         aggregateTimeout: 300,
         ignored: /node_modules/,
-      }
-      config.cache = false
+      };
+      config.cache = false;
     }
-    return config
+    return config;
   },
-}
+};
 
-export default nextConfig
+export default nextConfig;

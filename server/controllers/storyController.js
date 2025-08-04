@@ -47,10 +47,10 @@ exports.getStories = async (req, res) => {
     const page = Number.parseInt(req.query.page) || 1;
     const limit = Number.parseInt(req.query.limit) || 10;
     const skip = (page - 1) * limit;
-    
+
     // Check if this is an admin request for unapproved stories
-    const isAdminRequest = req.query.approved === 'false';
-    const filter = isAdminRequest 
+    const isAdminRequest = req.query.approved === "false";
+    const filter = isAdminRequest
       ? { approved: false, isDeleted: false }
       : { approved: true, isDeleted: false };
 
@@ -151,10 +151,10 @@ exports.getFeaturedStories = async (req, res) => {
 // @access  Public
 exports.getStoryById = async (req, res) => {
   try {
-    const story = await Story.findOne({ 
-      _id: req.params.id, 
-      approved: true, 
-      isDeleted: false 
+    const story = await Story.findOne({
+      _id: req.params.id,
+      approved: true,
+      isDeleted: false,
     })
       .populate("author", "firstname lastname username profileImage")
       .populate({

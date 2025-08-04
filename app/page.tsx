@@ -145,6 +145,39 @@ export default function Home() {
         </div>
       </section> */}
 
+      {/* Demo Section */}
+      <section className="py-16 bg-slate-50">
+        <div className="container mx-auto px-4 md:px-6">
+          <div className="max-w-3xl mx-auto text-center">
+            <h2 className="text-3xl font-bold tracking-tighter mb-4">
+              Demo: Admin Story Approval System
+            </h2>
+            <p className="text-muted-foreground mb-8">
+              Experience our admin approval workflow with interactive demo data. 
+              See how administrators can review and approve success stories before they go live.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Button size="lg" asChild>
+                <Link href="/admin/approvals">
+                  View Demo Approval System
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Link>
+              </Button>
+              <Button size="lg" variant="outline" asChild>
+                <Link href="/stories">
+                  Browse Success Stories
+                </Link>
+              </Button>
+            </div>
+            <div className="mt-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
+              <p className="text-sm text-blue-800">
+                💡 This demo uses mock data and simulated interactions. Perfect for testing the approval workflow!
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* CTA Section */}
 
       {!user && (
