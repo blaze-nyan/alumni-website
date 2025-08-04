@@ -12,7 +12,21 @@ import { Button } from "@/components/ui/button";
 import { Calendar, MapPin, Users } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
-import { getUpcomingEvents, type Event } from "@/lib/api/events";
+import { fetchApi } from "@/lib/api/client";
+
+
+type Event = {
+  eventId: string
+  title: string
+  description: string
+  author: string
+  calendar: string // Changed to string to align with API
+  location: string
+  attendees: string[]
+  comments: string[]
+  createdAt: string
+  mediaURLs: string[]
+}
 
 export default function UpcomingEvents() {
   const [events, setEvents] = useState<Event[]>([]);
@@ -23,7 +37,7 @@ export default function UpcomingEvents() {
     const fetchEvents = async () => {
       try {
         setLoading(true);
-        const data = await getUpcomingEvents();
+        const data: Event[] = await fetchApi("/events")
         setEvents(data);
         setError(null);
       } catch (err) {
@@ -76,97 +90,86 @@ export default function UpcomingEvents() {
     );
   }
 
-  // Fallback to demo data if no events are available
-  const displayEvents =
-    events.length > 0
-      ? events
-      : [
-          // Your existing demo events as fallback
-          {
-            id: "1",
-            title: "Annual Alumni Reunion",
-            description:
-              "Join us for our biggest event of the year! Network with fellow alumni, enjoy great food, and hear inspiring talks from distinguished graduates.",
-            author: {
-              id: "admin1",
-              firstname: "Admin",
-              lastname: "User",
-              username: "admin",
-              profileImage: "/placeholder.svg?height=40&width=40",
-            },
-            calendar: {
-              date: new Date(Date.now() + 1209600000).toISOString(), // 2 weeks from now
-              location: "University Main Campus",
-            },
-            attendees: ["user1", "user2", "user3"],
-            createdAt: new Date().toISOString(),
-            mediaIds: ["media1"],
-            mediaUrls: ["/placeholder.svg?height=200&width=400"],
-          },
-          // Add other demo events if needed
-        ];
+  const upcomingEvents = events.filter(event => new Date(event.calendar) > new Date());
+  const displayEvents = upcomingEvents.length > 0 ? upcomingEvents : [];
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-      {displayEvents.map((event) => (
-        <Card key={event.id} className="h-full flex flex-col">
-          {event.mediaUrls && event.mediaUrls.length > 0 && (
-            <div className="w-full h-48 overflow-hidden">
-              <img
-                src={event.mediaUrls[0] || "/placeholder.svg"}
-                alt={event.title}
-                className="w-full h-full object-cover"
-              />
-            </div>
-          )}
-          <CardHeader>
-            <div className="flex justify-between items-start">
-              <h3 className="text-xl font-bold">{event.title}</h3>
-              <Badge
-                variant="outline"
-                className="bg-accent/10 text-accent border-accent"
-              >
-                {new Date(event.calendar.date) > new Date()
-                  ? "Upcoming"
-                  : "Past"}
-              </Badge>
-            </div>
-          </CardHeader>
-          <CardContent className="flex-1">
-            <p className="text-muted-foreground mb-4 line-clamp-2">
-              {event.description}
-            </p>
-            <div className="space-y-2">
-              <div className="flex items-center gap-2 text-sm">
-                <Calendar className="h-4 w-4 text-primary" />
-                <span>
-                  {new Date(event.calendar.date).toLocaleDateString(undefined, {
-                    weekday: "long",
-                    year: "numeric",
-                    month: "long",
-                    day: "numeric",
-                    hour: "2-digit",
-                    minute: "2-digit",
-                  })}
-                </span>
+  <>
+    {displayEvents.length === 0 ? (
+      <div className="p-6 text-center text-muted-foreground">
+        No upcoming events at the moment.
+      </div>
+    ) : (
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {displayEvents.map((event: Event) => (
+          <Card key={event.eventId} className="h-full flex flex-col">
+            {/* ... rest of your card content ... */}
+            <CardHeader className="pb-2">
+              {event.mediaURLs && event.mediaURLs.length > 0 ? (
+                <div className="h-48 w-full overflow-hidden rounded-t-md">
+                  <img
+                    src={event.mediaURLs[0]}
+                    alt="Event media preview"
+                    className="h-full w-full object-cover"
+                  />
+                </div>
+              ) : (
+                <div className="h-48 w-full bg-muted rounded-t-md" />
+              )}
+              <div className="flex justify-between items-start">
+                <Link href={`/events/${event.eventId}`} className="hover:underline">
+                  <h3 className="text-xl font-bold">{event.title}</h3>
+                </Link>
+                <Badge
+                  variant="outline"
+                  className={
+                    new Date(event.calendar) > new Date()
+                      ? "bg-accent/10 text-accent border-accent"
+                      : "bg-muted text-muted-foreground"
+                  }
+                >
+                  {new Date(event.calendar) > new Date() ? "Upcoming" : "Past"}
+                </Badge>
               </div>
-              <div className="flex items-center gap-2 text-sm">
-                <MapPin className="h-4 w-4 text-primary" />
-                <span>{event.calendar.location}</span>
+            </CardHeader>
+            <CardContent className="flex-1 pb-2">
+              <p className="text-muted-foreground mb-4 line-clamp-2">{event.description}</p>
+              <div className="space-y-2">
+                <div className="flex items-center gap-2 text-sm">
+                  <Calendar className="h-4 w-4 text-primary" />
+                  <span>
+                    {new Date(event.calendar).toLocaleDateString(undefined, {
+                      weekday: "long",
+                      year: "numeric",
+                      month: "long",
+                      day: "numeric",
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
+                  </span>
+                </div>
+                <div className="flex items-center gap-2 text-sm">
+                  <MapPin className="h-4 w-4 text-primary" />
+                  <span>{event.location}</span>
+                </div>
+                <div className="flex items-center gap-2 text-sm">
+                  <Users className="h-4 w-4 text-primary" />
+                  <span>{event.attendees.length} attending</span>
+                </div>
               </div>
-              <div className="flex items-center gap-2 text-sm">
-                <Users className="h-4 w-4 text-primary" />
-                <span>{event.attendees.length} attending</span>
-              </div>
-            </div>
-          </CardContent>
-          <CardFooter>
-            <Button className="w-full" asChild>
-              <Link href={`/events/${event.id}`}>View Details</Link>
-            </Button>
-          </CardFooter>
-        </Card>
-      ))}
-    </div>
-  );
+            </CardContent>
+            <CardFooter className="pt-2">
+              <Button className="w-full" asChild>
+                <Link href={`/events/${event.eventId}`}>
+                  {new Date(event.calendar) > new Date() ? "Register" : "View Details"}
+                </Link>
+              </Button>
+            </CardFooter>
+          </Card>
+        ))}
+      </div>
+    )}
+  </>
+);
+
 }

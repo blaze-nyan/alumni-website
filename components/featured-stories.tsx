@@ -12,6 +12,8 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Skeleton } from "@/components/ui/skeleton";
 import { getFeaturedStories, type Story } from "@/lib/api/stories";
+import { fetchApi } from "@/lib/api/client";
+import { Heart, MessageSquare, Share2 } from "lucide-react";
 
 export default function FeaturedStories() {
   const [stories, setStories] = useState<Story[]>([]);
@@ -22,7 +24,7 @@ export default function FeaturedStories() {
     const fetchStories = async () => {
       try {
         setLoading(true);
-        const data = await getFeaturedStories();
+        const data: Story[] = await fetchApi("/stories-popular")
         setStories(data);
         setError(null);
       } catch (err) {
@@ -76,9 +78,11 @@ export default function FeaturedStories() {
   }
 
   // Fallback to demo data if no stories are available
+
+  
   const displayStories =
     stories.length > 0
-      ? stories
+      ? stories.slice(0, 3)
       : [
           // Your existing demo stories as fallback
           {
@@ -105,44 +109,62 @@ export default function FeaturedStories() {
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
       {displayStories.map((story) => (
-        <Link href={`/stories/${story.id}`} key={story.id}>
-          <Card className="h-full hover:shadow-md transition-shadow">
-            {story.mediaUrls && story.mediaUrls.length > 0 && (
-              <div className="w-full h-48 overflow-hidden">
-                <img
-                  src={story.mediaUrls[0] || "/placeholder.svg"}
-                  alt={story.title}
-                  className="w-full h-full object-cover"
-                />
-              </div>
-            )}
-            <CardHeader>
-              <h3 className="text-xl font-bold">{story.title}</h3>
-            </CardHeader>
-            <CardContent>
-              <p className="text-muted-foreground line-clamp-3">
-                {story.description}
-              </p>
-            </CardContent>
-            <CardFooter>
-              <div className="flex items-center gap-2">
-                <Avatar className="h-10 w-10">
-                  <AvatarImage
-                    src={story.author.profileImage}
-                    alt={`${story.author.firstname} ${story.author.lastname}`}
+        <Link href={`/stories/${story.successStoryId}`} key={story.id}>
+          <Card key={story.successStoryId} className="h-full flex flex-col">
+            <CardHeader className="pb-2">
+              {story.mediaURLs && story.mediaURLs.length > 0 ? (
+                <div className="h-48 w-full overflow-hidden rounded-t-md">
+                  <img
+                    src={story.mediaURLs[0]}
+                    alt="Story media preview"
+                    className="h-full w-full object-cover"
                   />
-                  <AvatarFallback className="bg-primary text-primary-foreground">
-                    {story.author.firstname[0]}
-                    {story.author.lastname[0]}
-                  </AvatarFallback>
-                </Avatar>
-                <div>
-                  <p className="text-sm font-medium">
-                    {story.author.firstname} {story.author.lastname}
-                  </p>
-                  <p className="text-xs text-muted-foreground">
-                    {new Date(story.createdAt).toLocaleDateString()}
-                  </p>
+                </div>
+              ) : (
+                <div className="h-48 w-full bg-muted rounded-t-md" />
+              )}
+              <Link href={`/stories/${story.successStoryId}`} className="hover:underline">
+                <h3 className="text-xl font-bold">{story.title}</h3>
+              </Link>
+            </CardHeader>
+            <CardContent className="flex-1 pb-2">
+              <p className="text-muted-foreground line-clamp-3">{story.description}</p>
+            </CardContent>
+            <CardFooter className="pt-2 flex flex-col gap-4">
+              <div className="flex justify-between items-center w-full">
+                <div className="flex items-center gap-2">
+                  <Avatar className="h-8 w-8">
+                    <AvatarFallback className="bg-primary text-primary-foreground">
+                      {typeof story.author === "string"
+                        ? story.author.charAt(0).toUpperCase()
+                        : (story.author.firstname?.charAt(0).toUpperCase() ?? "")}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div>
+                    <p className="text-sm font-medium">
+                      {typeof story.author === "string"
+                        ? story.author
+                        : story.author.firstname && story.author.lastname
+                        ? `${story.author.firstname} ${story.author.lastname}`
+                        : story.author.username}
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      {new Date(story.createdAt).toLocaleDateString()}
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3">
+                  <button className="flex items-center gap-1 text-muted-foreground hover:text-primary">
+                    <Heart className="h-4 w-4" />
+                    <span className="text-xs">{story.likeCount}</span>
+                  </button>
+                  <button className="flex items-center gap-1 text-muted-foreground hover:text-primary">
+                    <MessageSquare className="h-4 w-4" />
+                    <span className="text-xs">{story.commentCount}</span>
+                  </button>
+                  <button className="text-muted-foreground hover:text-primary">
+                    <Share2 className="h-4 w-4" />
+                  </button>
                 </div>
               </div>
             </CardFooter>
