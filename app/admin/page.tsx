@@ -8,6 +8,7 @@ import AdminDashboard from "@/components/admin/dashboard"
 import AdminUsers from "@/components/admin/users"
 import AdminStories from "@/components/admin/stories"
 import AdminEvents from "@/components/admin/events"
+import AdminApproval from "@/components/admin/approval"
 
 export default function AdminPage() {
   const { user, loading } = useAuth()
@@ -35,28 +36,13 @@ export default function AdminPage() {
     <div className="container py-8">
       <h1 className="text-3xl font-bold mb-8">Admin Dashboard</h1>
 
-      <Tabs defaultValue="dashboard">
-        <TabsList className="grid w-full grid-cols-4">
-          <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
-          <TabsTrigger value="users">Users</TabsTrigger>
-          <TabsTrigger value="stories">Stories</TabsTrigger>
-          <TabsTrigger value="events">Events</TabsTrigger>
+      <Tabs defaultValue="approval">
+        <TabsList className="grid w-full grid-cols-5">
+          <TabsTrigger value="approval">Approvals</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="dashboard" className="mt-6">
-          <AdminDashboard />
-        </TabsContent>
-
-        <TabsContent value="users" className="mt-6">
-          <AdminUsers />
-        </TabsContent>
-
-        <TabsContent value="stories" className="mt-6">
-          <AdminStories />
-        </TabsContent>
-
-        <TabsContent value="events" className="mt-6">
-          <AdminEvents />
+        <TabsContent value="approval" className="mt-6">
+          <AdminApproval />
         </TabsContent>
       </Tabs>
     </div>

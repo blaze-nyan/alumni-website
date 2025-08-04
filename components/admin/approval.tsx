@@ -257,8 +257,8 @@ export default function AdminApproval() {
                   </TableRow>
                 ) : (
                   filteredPendingStories.map((story) => (
-                    <TableRow key={story.id || story.successStoryId}>
-                      <TableCell>
+                    <TableRow key={story.id || story.successStoryId} className="cursor-pointer hover:bg-muted">
+                      <TableCell onClick={() => handleView(story.successStoryId || 0)} >
                         <div className="font-medium max-w-xs truncate">{story.title}</div>
                         <div className="text-sm text-muted-foreground max-w-xs truncate">
                           {story.description?.substring(0, 100)}...
