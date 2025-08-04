@@ -149,7 +149,7 @@ export async function getUserStories(userId: string): Promise<Story[]> {
 
 // Admin functions for story approval
 export async function getPendingStories(): Promise<Story[]> {
-  return fetchApi("/stories/unapproved");
+  return fetchApi("/stories-unapproved");
 }
 
 export async function approveStory(storyId: string): Promise<{ message: string }> {

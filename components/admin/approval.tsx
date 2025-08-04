@@ -20,6 +20,8 @@ import { Eye, MoreHorizontal, Search, Check, X, AlertTriangle } from "lucide-rea
 import { getAllStoriesForAdmin, getPendingStories, approveStory, rejectStory, Story } from "@/lib/api/stories"
 import { useAuth } from "@/hooks/use-auth"
 
+import { useRouter } from 'next/navigation'; // or 'react-router-dom' if not using Next.js
+
 export default function AdminApproval() {
   const [searchQuery, setSearchQuery] = useState("")
   const [allStories, setAllStories] = useState<Story[]>([])
@@ -29,6 +31,13 @@ export default function AdminApproval() {
   const [error, setError] = useState<string | null>(null)
   const [successMessage, setSuccessMessage] = useState<string | null>(null)
   const { user } = useAuth()
+
+  const router = useRouter();
+
+  const handleView = (storyId: number | string) => {
+    console.log("Viewing story:", storyId);
+    router.push(`/stories/${storyId}`);
+  };
 
   const fetchStories = async () => {
     if (!user || user.userType !== "admin") {
@@ -343,7 +352,11 @@ export default function AdminApproval() {
                   </TableRow>
                 ) : (
                   filteredAllStories.map((story) => (
-                    <TableRow key={story.id || story.successStoryId}>
+                      <TableRow
+                          key={story.id || story.successStoryId}
+                          onClick={() => handleView(story.successStoryId || 0)}
+                          className="cursor-pointer hover:bg-muted"
+                      >
                       <TableCell>
                         <div className="font-medium max-w-xs truncate">{story.title}</div>
                         <div className="text-sm text-muted-foreground max-w-xs truncate">
