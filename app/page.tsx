@@ -1,11 +1,17 @@
+"use client"
+
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { ArrowRight, Calendar, Users, Award } from "lucide-react";
+import { useAuth } from "@/hooks/use-auth"
 import FeaturedStories from "@/components/featured-stories";
 import UpcomingEvents from "@/components/upcoming-events";
 
 export default function Home() {
+  const {user, loading} = useAuth();
+
+  console.log(user)
   return (
     <div className="flex flex-col min-h-screen">
       {/* Hero Section */}
@@ -20,6 +26,8 @@ export default function Home() {
                 Connect with fellow graduates, share your success stories, and
                 stay updated with the latest events.
               </p>
+
+            {!user && (
               <div className="flex flex-col sm:flex-row gap-4">
                 <Button
                   size="lg"
@@ -37,10 +45,11 @@ export default function Home() {
                   <Link href="/login">Sign In</Link>
                 </Button>
               </div>
+            )}
             </div>
             <div className="hidden md:block">
               <img
-                src="/placeholder.svg?height=400&width=500"
+                src="/rangsit-university.jpg"
                 alt="Alumni gathering"
                 className="rounded-lg shadow-lg"
                 width={500}
@@ -102,7 +111,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Featured Success Stories */}
+      {/*
       <section className="py-16 bg-muted/50">
         <div className="container mx-auto px-4 md:px-6">
           <div className="flex justify-between items-center mb-8">
@@ -119,7 +128,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Upcoming Events */}
+
       <section className="py-16 bg-background">
         <div className="container mx-auto px-4 md:px-6">
           <div className="flex justify-between items-center mb-8">
@@ -134,27 +143,30 @@ export default function Home() {
           </div>
           <UpcomingEvents />
         </div>
-      </section>
+      </section> */}
 
       {/* CTA Section */}
-      <section className="py-16 bg-accent text-accent-foreground">
-        <div className="container mx-auto px-4 md:px-6 text-center">
-          <h2 className="text-3xl font-bold tracking-tighter mb-4">
-            Ready to Join Our Community?
-          </h2>
-          <p className="text-accent-foreground/90 max-w-[600px] mx-auto mb-8">
-            Sign up today to connect with fellow alumni, share your stories, and
-            stay updated with the latest events.
-          </p>
-          <Button
-            size="lg"
-            className="bg-white text-accent hover:bg-white/90"
-            asChild
-          >
-            <Link href="/signup">Join Now</Link>
-          </Button>
-        </div>
-      </section>
+
+      {!user && (
+        <section className="py-16 bg-accent text-accent-foreground">
+          <div className="container mx-auto px-4 md:px-6 text-center">
+            <h2 className="text-3xl font-bold tracking-tighter mb-4">
+              Ready to Join Our Community?
+            </h2>
+            <p className="text-accent-foreground/90 max-w-[600px] mx-auto mb-8">
+              Sign up today to connect with fellow alumni, share your stories, and
+              stay updated with the latest events.
+            </p>
+            <Button
+              size="lg"
+              className="bg-white text-accent hover:bg-white/90"
+              asChild
+            >
+              <Link href="/signup">Join Now</Link>
+            </Button>
+          </div>
+        </section>
+      )}
     </div>
   );
 }

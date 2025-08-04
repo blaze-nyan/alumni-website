@@ -17,7 +17,7 @@ const PORT = process.env.PORT || 5300;
 // Middleware
 app.use(
   cors({
-    origin: "http://localhost:3000", // Your Next.js frontend URL
+    origin: "http://localhost:5172", // Your Next.js frontend URL
     credentials: true,
   })
 );

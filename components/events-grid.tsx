@@ -8,25 +8,19 @@ import { Calendar, MapPin, Users } from "lucide-react"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Badge } from "@/components/ui/badge"
 import { useAuth } from "@/hooks/use-auth"
+import { fetchApi } from "@/lib/api/client"
 
 type Event = {
-  id: string
+  eventId: string
   title: string
   description: string
-  author: {
-    id: string
-    firstname: string
-    lastname: string
-    profileImage?: string
-  }
-  calendar: {
-    date: string
-    location: string
-  }
+  author: string
+  calendar: Date,
+  location: string
   attendees: string[]
+  comments: string[]
   createdAt: string
-  mediaIds: string[]
-  mediaUrls?: string[]
+  mediaURLs: string[]
 }
 
 export default function EventsGrid() {
@@ -41,19 +35,13 @@ export default function EventsGrid() {
       try {
         setLoading(true)
         // In a real app, you would fetch from your API with pagination
-        const response = await fetch(`/api/events?page=${page}&limit=9`)
-        if (!response.ok) {
-          throw new Error("Failed to fetch events")
-        }
-        const data = await response.json()
-
+        const data = await fetchApi(`/events`)
         if (page === 1) {
-          setEvents(data.events)
+          setEvents(data)
         } else {
-          setEvents((prev) => [...prev, ...data.events])
+          setEvents((prev) => [...prev, ...data])
         }
 
-        setHasMore(data.hasMore)
       } catch (error) {
         console.error("Error fetching events:", error)
       } finally {
@@ -66,7 +54,7 @@ export default function EventsGrid() {
 
   // For demo purposes
   const demoEvents: Event[] = Array.from({ length: 9 }, (_, i) => ({
-    id: `event-${i + 1}`,
+    eventId: `event-${i + 1}`,
     title: [
       "Annual Alumni Reunion",
       "Tech Industry Networking Night",
@@ -80,26 +68,19 @@ export default function EventsGrid() {
     ][i % 9],
     description:
       "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
-    author: {
-      id: `admin-${(i % 2) + 1}`,
-      firstname: ["Admin", "Event", "Career"][i % 3],
-      lastname: ["User", "Coordinator", "Services"][i % 3],
-      profileImage: `/placeholder.svg?height=40&width=40&text=A${(i % 3) + 1}`,
-    },
-    calendar: {
-      date: new Date(Date.now() + (i % 3 === 0 ? -1 : 1) * (i + 1) * 86400000 * 7).toISOString(),
-      location: [
-        "University Main Campus",
-        "Innovation Hub, Downtown",
-        "Online (Zoom)",
-        "Alumni Center",
-        "Conference Center",
-      ][i % 5],
-    },
+    author: ["Admin", "Event", "Career"][i % 3],
+    calendar: new Date(Date.now() + (i % 3 === 0 ? -1 : 1) * (i + 1) * 86400000 * 7),
+    location: [
+      "University Main Campus",
+      "Innovation Hub, Downtown",
+      "Online (Zoom)",
+      "Alumni Center",
+      "Conference Center",
+    ][i % 5],
     attendees: Array.from({ length: Math.floor(Math.random() * 50) + 5 }, (_, j) => `user-${j}`),
     createdAt: new Date(Date.now() - i * 86400000).toISOString(),
-    mediaIds: i % 2 === 0 ? [`media-${i + 1}`] : [],
-    mediaUrls: i % 2 === 0 ? [`/placeholder.svg?height=200&width=400&text=Event ${i + 1}`] : [],
+    mediaURLs: i % 2 === 0 ? [`media-${i + 1}`] : [],
+    comments: []
   }))
 
   if (loading && page === 1) {
@@ -124,37 +105,36 @@ export default function EventsGrid() {
       </div>
     )
   }
-
   return (
     <div className="space-y-8">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {(events.length > 0 ? events : demoEvents).map((event) => (
-          <Card key={event.id} className="h-full flex flex-col">
-            {event.mediaUrls && event.mediaUrls.length > 0 && (
-              <Link href={`/events/${event.id}`}>
-                <div className="w-full h-48 overflow-hidden">
+          <Card key={event.eventId} className="h-full flex flex-col">
+            <CardHeader className="pb-2">
+              {event.mediaURLs && event.mediaURLs.length > 0 ? (
+                <div className="h-48 w-full overflow-hidden rounded-t-md">
                   <img
-                    src={event.mediaUrls[0] || "/placeholder.svg"}
-                    alt={event.title}
-                    className="w-full h-full object-cover transition-transform hover:scale-105"
+                    src={event.mediaURLs[0]}
+                    alt="Story media preview"
+                    className="h-full w-full object-cover"
                   />
                 </div>
-              </Link>
-            )}
-            <CardHeader className="pb-2">
+              ) : (
+                <div className="h-48 w-full bg-muted rounded-t-md" />
+              )}
               <div className="flex justify-between items-start">
-                <Link href={`/events/${event.id}`} className="hover:underline">
+                <Link href={`/events/${event.eventId}`} className="hover:underline">
                   <h3 className="text-xl font-bold">{event.title}</h3>
                 </Link>
                 <Badge
                   variant="outline"
                   className={
-                    new Date(event.calendar.date) > new Date()
+                    new Date(event.calendar) > new Date()
                       ? "bg-accent/10 text-accent border-accent"
                       : "bg-muted text-muted-foreground"
                   }
                 >
-                  {new Date(event.calendar.date) > new Date() ? "Upcoming" : "Past"}
+                  {new Date(event.calendar) > new Date() ? "Upcoming" : "Past"}
                 </Badge>
               </div>
             </CardHeader>
@@ -164,7 +144,7 @@ export default function EventsGrid() {
                 <div className="flex items-center gap-2 text-sm">
                   <Calendar className="h-4 w-4 text-primary" />
                   <span>
-                    {new Date(event.calendar.date).toLocaleDateString(undefined, {
+                    {new Date(event.calendar).toLocaleDateString(undefined, {
                       weekday: "long",
                       year: "numeric",
                       month: "long",
@@ -176,7 +156,7 @@ export default function EventsGrid() {
                 </div>
                 <div className="flex items-center gap-2 text-sm">
                   <MapPin className="h-4 w-4 text-primary" />
-                  <span>{event.calendar.location}</span>
+                  <span>{event.location}</span>
                 </div>
                 <div className="flex items-center gap-2 text-sm">
                   <Users className="h-4 w-4 text-primary" />
@@ -186,8 +166,8 @@ export default function EventsGrid() {
             </CardContent>
             <CardFooter className="pt-2">
               <Button className="w-full" asChild>
-                <Link href={`/events/${event.id}`}>
-                  {new Date(event.calendar.date) > new Date() ? "Register" : "View Details"}
+                <Link href={`/events/${event.eventId}`}>
+                  {new Date(event.calendar) > new Date() ? "Register" : "View Details"}
                 </Link>
               </Button>
             </CardFooter>
@@ -201,15 +181,7 @@ export default function EventsGrid() {
         </div>
       )}
 
-      {hasMore && !loading && (
-        <div className="flex justify-center">
-          <Button variant="outline" onClick={() => setPage((prev) => prev + 1)}>
-            Load More
-          </Button>
-        </div>
-      )}
-
-      {user?.usertype === "admin" && (
+      {user?.userType === "admin" && (
         <div className="fixed bottom-6 right-6">
           <Button size="lg" className="rounded-full h-14 w-14 shadow-lg" asChild>
             <Link href="/events/create">

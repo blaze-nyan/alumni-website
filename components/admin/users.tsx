@@ -20,10 +20,10 @@ type User = {
   id: string
   username: string
   email: string
-  firstname: string
-  lastname: string
-  usertype: "alumni" | "admin"
-  status: "active" | "inactive" | "pending"
+  firstName: string
+  surName: string
+  userType: "alumni" | "admin"
+  status: string
   createdAt: string
   profileImage?: string
 }
@@ -37,12 +37,11 @@ export default function AdminUsers() {
     username: ["jsmith", "sjohnson", "mwong", "edavis", "dmiller", "lwilson", "rbrown", "jtaylor", "tanderson", "jdoe"][
       i
     ],
-    email: [
-      `${["john", "sarah", "michael", "emma", "david", "lisa", "robert", "jennifer", "thomas", "jane"][i]}@example.com`,
-    ],
-    firstname: ["John", "Sarah", "Michael", "Emma", "David", "Lisa", "Robert", "Jennifer", "Thomas", "Jane"][i],
-    lastname: ["Smith", "Johnson", "Wong", "Davis", "Miller", "Wilson", "Brown", "Taylor", "Anderson", "Doe"][i],
-    usertype: i === 0 || i === 5 ? "admin" : "alumni",
+    email: `${["john", "sarah", "michael", "emma", "david", "lisa", "robert", "jennifer", "thomas", "jane"][i]}@example.com`,
+
+    firstName: ["John", "Sarah", "Michael", "Emma", "David", "Lisa", "Robert", "Jennifer", "Thomas", "Jane"][i],
+    surName: ["Smith", "Johnson", "Wong", "Davis", "Miller", "Wilson", "Brown", "Taylor", "Anderson", "Doe"][i],
+    userType: i === 0 || i === 5 ? "admin" : "alumni",
     status: ["active", "active", "active", "inactive", "active", "active", "pending", "active", "active", "inactive"][
       i
     ],
@@ -54,8 +53,8 @@ export default function AdminUsers() {
     (user) =>
       user.username.toLowerCase().includes(searchQuery.toLowerCase()) ||
       user.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      user.firstname.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      user.lastname.toLowerCase().includes(searchQuery.toLowerCase()),
+      user.firstName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      user.surName.toLowerCase().includes(searchQuery.toLowerCase()),
   )
 
   return (
@@ -94,15 +93,15 @@ export default function AdminUsers() {
                 <TableCell>
                   <div className="flex items-center gap-3">
                     <Avatar className="h-8 w-8">
-                      <AvatarImage src={user.profileImage} alt={`${user.firstname} ${user.lastname}`} />
+                      <AvatarImage src={user.profileImage} alt={`${user.firstName} ${user.surName}`} />
                       <AvatarFallback className="bg-primary text-primary-foreground text-xs">
-                        {user.firstname[0]}
-                        {user.lastname[0]}
+                        {user.firstName[0]}
+                        {user.surName[0]}
                       </AvatarFallback>
                     </Avatar>
                     <div>
                       <p className="font-medium">
-                        {user.firstname} {user.lastname}
+                        {user.firstName} {user.surName}
                       </p>
                       <p className="text-xs text-muted-foreground">@{user.username}</p>
                     </div>
@@ -110,7 +109,7 @@ export default function AdminUsers() {
                 </TableCell>
                 <TableCell>{user.email}</TableCell>
                 <TableCell>
-                  <Badge variant={user.usertype === "admin" ? "default" : "outline"}>{user.usertype}</Badge>
+                  <Badge variant={user.userType === "admin" ? "default" : "outline"}>{user.userType}</Badge>
                 </TableCell>
                 <TableCell>
                   <Badge

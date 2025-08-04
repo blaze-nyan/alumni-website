@@ -30,7 +30,7 @@ exports.signup = async (req, res) => {
       firstname,
       lastname,
       password,
-      usertype: "alumni",
+      userType: "alumni",
     });
 
     // Create alumni profile
@@ -51,7 +51,7 @@ exports.signup = async (req, res) => {
           email: user.email,
           firstname: user.firstname,
           lastname: user.lastname,
-          usertype: user.usertype,
+          userType: user.userType,
           createdAt: user.createdAt,
           updatedAt: user.updatedAt,
         },
@@ -96,7 +96,7 @@ exports.login = async (req, res) => {
         email: user.email,
         firstname: user.firstname,
         lastname: user.lastname,
-        usertype: user.usertype,
+        userType: user.userType,
         profileImage: user.profileImage,
         createdAt: user.createdAt,
         updatedAt: user.updatedAt,
@@ -125,7 +125,7 @@ exports.getMe = async (req, res) => {
       email: user.email,
       firstname: user.firstname,
       lastname: user.lastname,
-      usertype: user.usertype,
+      userType: user.userType,
       profileImage: user.profileImage,
       createdAt: user.createdAt,
       updatedAt: user.updatedAt,

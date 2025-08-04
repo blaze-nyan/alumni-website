@@ -55,12 +55,6 @@ export default function Header() {
           >
             Events
           </Link>
-          <Link
-            href="/alumni"
-            className="text-sm font-medium hover:text-primary"
-          >
-            Alumni Directory
-          </Link>
         </nav>
 
         {/* Desktop Auth Buttons */}
@@ -78,8 +72,8 @@ export default function Header() {
                       alt={user.username}
                     />
                     <AvatarFallback className="bg-primary text-primary-foreground">
-                      {user.firstname?.[0]}
-                      {user.lastname?.[0]}
+                      {user.firstName?.[0]}
+                      {user.surName?.[0]}
                     </AvatarFallback>
                   </Avatar>
                 </Button>
@@ -99,7 +93,7 @@ export default function Header() {
                 <DropdownMenuItem asChild>
                   <Link href="/profile">Profile</Link>
                 </DropdownMenuItem>
-                {user.usertype === "admin" && (
+                {user.userType === "admin" && (
                   <DropdownMenuItem asChild>
                     <Link href="/admin">Admin Dashboard</Link>
                   </DropdownMenuItem>
@@ -160,13 +154,6 @@ export default function Header() {
             >
               Events
             </Link>
-            <Link
-              href="/alumni"
-              className="text-sm font-medium hover:text-primary"
-              onClick={toggleMenu}
-            >
-              Alumni Directory
-            </Link>
 
             {user ? (
               <>
@@ -177,7 +164,7 @@ export default function Header() {
                 >
                   Profile
                 </Link>
-                {user.usertype === "admin" && (
+                {user.userType === "admin" && (
                   <Link
                     href="/admin"
                     className="text-sm font-medium hover:text-primary"

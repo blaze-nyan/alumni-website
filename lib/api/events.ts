@@ -17,7 +17,6 @@ export interface Event {
     location: string;
   };
   attendees: string[];
-  mediaIds: string[];
   mediaUrls?: string[];
   createdAt: string;
   updatedAt: string;

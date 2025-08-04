@@ -31,11 +31,11 @@ export default function Footer() {
                   Events
                 </Link>
               </li>
-              <li>
+              {/* <li>
                 <Link href="/alumni" className="hover:text-primary">
                   Alumni Directory
                 </Link>
-              </li>
+              </li> */}
             </ul>
           </div>
           <div>

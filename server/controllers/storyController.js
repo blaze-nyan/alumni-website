@@ -236,7 +236,7 @@ exports.updateStory = async (req, res) => {
 exports.deleteStory = async (req, res) => {
   try {
     const userId = req.user._id;
-    const userType = req.user.usertype;
+    const userType = req.user.userType;
 
     const story = await Story.findById(req.params.id);
 
