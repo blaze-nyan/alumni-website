@@ -52,7 +52,7 @@ export default function StoriesFilter({
         <DropdownMenuTrigger asChild>
           <Button variant="outline" className="flex gap-2">
             <SlidersHorizontal className="h-4 w-4" />
-            <span>Filter</span>
+            <span>Sort</span>
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-56">
