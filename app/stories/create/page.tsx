@@ -7,6 +7,8 @@ import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/components/ui/card"
+import { Alert, AlertDescription } from "@/components/ui/alert"
+import { Info } from "lucide-react"
 import { fetchApi } from "@/lib/api/client"
 
 export default function CreateStoryPage() {
@@ -79,6 +81,14 @@ export default function CreateStoryPage() {
             <CardHeader>
             <CardTitle>Create New Story</CardTitle>
             </CardHeader>
+            
+            <Alert className="mx-6 mb-4">
+              <Info className="h-4 w-4" />
+              <AlertDescription>
+                Your story will be submitted for admin review before being published. You'll be notified once it's approved.
+              </AlertDescription>
+            </Alert>
+
             <form onSubmit={handleSubmit}>
             <CardContent className="space-y-4">
                 <div>

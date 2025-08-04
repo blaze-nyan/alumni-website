@@ -8,8 +8,11 @@ const {
   deleteStory,
   likeStory,
   addComment,
+  approveStory,
+  getPendingStories,
+  getAllStoriesForAdmin,
 } = require("../controllers/storyController");
-const { protect } = require("../middleware/auth");
+const { protect, admin } = require("../middleware/auth");
 
 const router = express.Router();
 
@@ -25,5 +28,10 @@ router.put("/:id", updateStory);
 router.delete("/:id", deleteStory);
 router.post("/:id/like", likeStory);
 router.post("/:id/comments", addComment);
+
+// Admin only routes
+router.get("/admin/all", admin, getAllStoriesForAdmin);
+router.get("/admin/pending", admin, getPendingStories);
+router.patch("/:id/approve", admin, approveStory);
 
 module.exports = router;

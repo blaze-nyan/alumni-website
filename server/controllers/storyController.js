@@ -47,8 +47,14 @@ exports.getStories = async (req, res) => {
     const page = Number.parseInt(req.query.page) || 1;
     const limit = Number.parseInt(req.query.limit) || 10;
     const skip = (page - 1) * limit;
+    
+    // Check if this is an admin request for unapproved stories
+    const isAdminRequest = req.query.approved === 'false';
+    const filter = isAdminRequest 
+      ? { approved: false, isDeleted: false }
+      : { approved: true, isDeleted: false };
 
-    const stories = await Story.find({ isDeleted: false })
+    const stories = await Story.find(filter)
       .sort({ createdAt: -1 })
       .skip(skip)
       .limit(limit)
@@ -56,7 +62,7 @@ exports.getStories = async (req, res) => {
       .lean();
 
     // Get total count for pagination
-    const total = await Story.countDocuments({ isDeleted: false });
+    const total = await Story.countDocuments(filter);
 
     // Enhance stories with media URLs and comment counts
     const enhancedStories = await Promise.all(
@@ -104,7 +110,7 @@ exports.getStories = async (req, res) => {
 // @access  Public
 exports.getFeaturedStories = async (req, res) => {
   try {
-    const stories = await Story.find({ isDeleted: false })
+    const stories = await Story.find({ approved: true, isDeleted: false })
       .sort({ likes: -1, createdAt: -1 })
       .limit(3)
       .populate("author", "firstname lastname username profileImage")
@@ -145,7 +151,11 @@ exports.getFeaturedStories = async (req, res) => {
 // @access  Public
 exports.getStoryById = async (req, res) => {
   try {
-    const story = await Story.findOne({ _id: req.params.id, isDeleted: false })
+    const story = await Story.findOne({ 
+      _id: req.params.id, 
+      approved: true, 
+      isDeleted: false 
+    })
       .populate("author", "firstname lastname username profileImage")
       .populate({
         path: "comments",
@@ -380,6 +390,121 @@ exports.getUserStories = async (req, res) => {
     res.json(enhancedStories);
   } catch (error) {
     console.error("Get user stories error:", error);
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// @desc    Approve a story (Admin only)
+// @route   PATCH /api/stories/:id/approve
+// @access  Private (Admin)
+exports.approveStory = async (req, res) => {
+  try {
+    const story = await Story.findById(req.params.id);
+
+    if (!story) {
+      return res.status(404).json({ message: "Story not found" });
+    }
+
+    if (story.isDeleted) {
+      return res.status(400).json({ message: "Cannot approve deleted story" });
+    }
+
+    story.approved = true;
+    await story.save();
+
+    res.json({ message: "Story approved successfully", story });
+  } catch (error) {
+    console.error("Approve story error:", error);
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// @desc    Get pending stories (Admin only)
+// @route   GET /api/stories/pending
+// @access  Private (Admin)
+exports.getPendingStories = async (req, res) => {
+  try {
+    const stories = await Story.find({ approved: false, isDeleted: false })
+      .sort({ createdAt: -1 })
+      .populate("author", "firstname lastname username profileImage")
+      .lean();
+
+    // Enhance stories with media URLs and comment counts
+    const enhancedStories = await Promise.all(
+      stories.map(async (story) => {
+        // Get media URLs
+        const mediaUrls = [];
+        if (story.mediaIds && story.mediaIds.length > 0) {
+          for (const mediaId of story.mediaIds) {
+            const media = await Media.findOne({ mediaId });
+            if (media) {
+              mediaUrls.push(
+                `data:${media.dataType};base64,${media.base64data}`
+              );
+            }
+          }
+        }
+
+        // Get comment count
+        const commentCount = await Comment.countDocuments({ story: story._id });
+
+        return {
+          ...story,
+          mediaUrls,
+          comments: commentCount,
+          likes: story.likes ? story.likes.length : 0,
+        };
+      })
+    );
+
+    res.json(enhancedStories);
+  } catch (error) {
+    console.error("Get pending stories error:", error);
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// @desc    Get all stories for admin
+// @route   GET /api/stories/admin
+// @access  Private (Admin)
+exports.getAllStoriesForAdmin = async (req, res) => {
+  try {
+    const stories = await Story.find({ isDeleted: false })
+      .sort({ createdAt: -1 })
+      .populate("author", "firstname lastname username profileImage")
+      .lean();
+
+    // Enhance stories with media URLs and comment counts
+    const enhancedStories = await Promise.all(
+      stories.map(async (story) => {
+        // Get media URLs
+        const mediaUrls = [];
+        if (story.mediaIds && story.mediaIds.length > 0) {
+          for (const mediaId of story.mediaIds) {
+            const media = await Media.findOne({ mediaId });
+            if (media) {
+              mediaUrls.push(
+                `data:${media.dataType};base64,${media.base64data}`
+              );
+            }
+          }
+        }
+
+        // Get comment count
+        const commentCount = await Comment.countDocuments({ story: story._id });
+
+        return {
+          ...story,
+          mediaUrls,
+          comments: commentCount,
+          likes: story.likes ? story.likes.length : 0,
+        };
+      })
+    );
+
+    res.json(enhancedStories);
+  } catch (error) {
+    console.error("Get all stories for admin error:", error);
     res.status(500).json({ message: error.message });
   }
 };
