@@ -2,7 +2,6 @@
 
 import type React from "react"
 
-import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import {
@@ -16,14 +15,24 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Search, SlidersHorizontal } from "lucide-react"
 
-export default function StoriesFilter() {
-  const [searchQuery, setSearchQuery] = useState("")
-  const [sortBy, setSortBy] = useState("latest")
+type StoriesFilterProps = {
+  searchQuery: string
+  setSearchQuery: (query: string) => void
+  sortBy: "latest" | "oldest" | "popular"
+  setSortBy: (value: "latest" | "oldest" | "popular") => void
+}
+
+export default function StoriesFilter({
+  searchQuery,
+  setSearchQuery,
+  sortBy,
+  setSortBy,
+}: StoriesFilterProps) {
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault()
-    // Implement search functionality
     console.log("Searching for:", searchQuery)
+    // optionally, add onSearch callback if you want parent notified on submit
   }
 
   return (
@@ -49,7 +58,10 @@ export default function StoriesFilter() {
         <DropdownMenuContent align="end" className="w-56">
           <DropdownMenuLabel>Sort By</DropdownMenuLabel>
           <DropdownMenuSeparator />
-          <DropdownMenuRadioGroup value={sortBy} onValueChange={setSortBy}>
+          <DropdownMenuRadioGroup
+            value={sortBy}
+            onValueChange={(value) => setSortBy(value as "latest" | "oldest" | "popular")}
+          >
             <DropdownMenuRadioItem value="latest">Latest</DropdownMenuRadioItem>
             <DropdownMenuRadioItem value="oldest">Oldest</DropdownMenuRadioItem>
             <DropdownMenuRadioItem value="popular">Most Popular</DropdownMenuRadioItem>
@@ -59,4 +71,3 @@ export default function StoriesFilter() {
     </div>
   )
 }
-

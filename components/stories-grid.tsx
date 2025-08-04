@@ -1,17 +1,18 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useState, useMemo } from "react"
 import Link from "next/link"
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
 import { useAuth } from "@/hooks/use-auth"
 import { Heart, MessageSquare, Share2 } from "lucide-react"
 import { fetchApi } from "@/lib/api/client"
+import StoriesFilter from "./stories-filter"
 
 type Story = {
-  successStoryId: number
+  successStoryId: number | string
   title: string
   description: string
   author: string
@@ -26,22 +27,22 @@ export default function StoriesGrid() {
   const [stories, setStories] = useState<Story[]>([])
   const [loading, setLoading] = useState(true)
   const [page, setPage] = useState(1)
-  const [hasMore, setHasMore] = useState(true)
   const { user } = useAuth()
+
+  // New: filter & sort state lifted here
+  const [searchQuery, setSearchQuery] = useState("")
+  const [sortBy, setSortBy] = useState<"latest" | "oldest" | "popular">("latest")
 
   useEffect(() => {
     const fetchStories = async () => {
       try {
         setLoading(true)
-        // In a real app, you would fetch from your API with pagination
         const data = await fetchApi(`/stories`)
-        // console.log(data)
         if (page === 1) {
           setStories(data)
         } else {
           setStories((prev) => [...prev, ...data])
         }
-
       } catch (error) {
         console.error("Error fetching stories:", error)
       } finally {
@@ -52,7 +53,7 @@ export default function StoriesGrid() {
     fetchStories()
   }, [page])
 
-  // For demo purposes
+  // Demo stories for fallback if no real data
   const demoStories = Array.from({ length: 9 }, (_, i) => ({
     successStoryId: `story-${i + 1}`,
     title: [
@@ -67,13 +68,40 @@ export default function StoriesGrid() {
       "Building a Global Fashion Brand",
     ][i % 9],
     description:
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
+      "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
     author: ["John", "Sarah", "Michael", "Emma", "David", "Lisa", "Robert", "Jennifer", "Thomas"][i % 9],
     createdAt: new Date(Date.now() - i * 86400000 * 3).toISOString(),
     mediaURLs: [`media-${i + 1}`],
     likeCount: 0,
-    commentCount: 0
+    commentCount: 0,
   }))
+
+  // Filter and sort the stories (or demoStories if empty)
+  const filteredSortedStories = useMemo(() => {
+    const list = stories.length > 0 ? stories : demoStories
+
+    // Filter by searchQuery on title, description, or author
+    const filtered = list.filter((story) =>
+      [story.title, story.description, story.author]
+        .some((field) => field.toLowerCase().includes(searchQuery.toLowerCase()))
+    )
+
+    // Sort by selected option
+    const sorted = filtered.sort((a, b) => {
+      if (sortBy === "latest") {
+        return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      }
+      if (sortBy === "oldest") {
+        return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+      }
+      if (sortBy === "popular") {
+        return b.likeCount - a.likeCount
+      }
+      return 0
+    })
+
+    return sorted
+  }, [stories, demoStories, searchQuery, sortBy])
 
   if (loading && page === 1) {
     return (
@@ -107,8 +135,26 @@ export default function StoriesGrid() {
 
   return (
     <div className="space-y-8">
+      <div className="flex flex-col md:flex-row justify-between items-start gap-6 mb-8">
+        <div>
+          <h1 className="text-3xl font-bold mb-2">Success Stories</h1>
+          <p className="text-muted-foreground">
+            Inspiring journeys and achievements from our alumni community
+          </p>
+        </div>
+
+        {/* Pass the controlled states and setters to StoriesFilter */}
+        <StoriesFilter
+          searchQuery={searchQuery}
+          setSearchQuery={setSearchQuery}
+          sortBy={sortBy}
+          setSortBy={setSortBy}
+          // optional: onSearch={() => { /* if you want to handle submit */ }}
+        />
+      </div>
+
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {(stories.length > 0 ? stories : demoStories).map((story) => (
+        {filteredSortedStories.map((story) => (
           <Card key={story.successStoryId} className="h-full flex flex-col">
             <CardHeader className="pb-2">
               {story.mediaURLs && story.mediaURLs.length > 0 ? (
@@ -138,10 +184,10 @@ export default function StoriesGrid() {
                     </AvatarFallback>
                   </Avatar>
                   <div>
-                    <p className="text-sm font-medium">
-                      {story.author}
+                    <p className="text-sm font-medium">{story.author}</p>
+                    <p className="text-xs text-muted-foreground">
+                      {new Date(story.createdAt).toLocaleDateString()}
                     </p>
-                    <p className="text-xs text-muted-foreground">{new Date(story.createdAt).toLocaleDateString()}</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
@@ -181,4 +227,3 @@ export default function StoriesGrid() {
     </div>
   )
 }
-

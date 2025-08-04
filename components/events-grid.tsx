@@ -9,13 +9,14 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { Badge } from "@/components/ui/badge"
 import { useAuth } from "@/hooks/use-auth"
 import { fetchApi } from "@/lib/api/client"
+import EventsFilter from "./events-filter"
 
 type Event = {
   eventId: string
   title: string
   description: string
   author: string
-  calendar: Date,
+  calendar: string // Changed to string to align with API
   location: string
   attendees: string[]
   comments: string[]
@@ -27,61 +28,47 @@ export default function EventsGrid() {
   const [events, setEvents] = useState<Event[]>([])
   const [loading, setLoading] = useState(true)
   const [page, setPage] = useState(1)
-  const [hasMore, setHasMore] = useState(true)
   const { user } = useAuth()
+
+  // Search + Sort state
+  const [searchQuery, setSearchQuery] = useState("")
+  const [sortBy, setSortBy] = useState<"latest" | "oldest">("latest")
 
   useEffect(() => {
     const fetchEvents = async () => {
       try {
         setLoading(true)
-        // In a real app, you would fetch from your API with pagination
         const data = await fetchApi(`/events`)
         if (page === 1) {
           setEvents(data)
         } else {
           setEvents((prev) => [...prev, ...data])
         }
-
       } catch (error) {
         console.error("Error fetching events:", error)
       } finally {
         setLoading(false)
       }
     }
-
     fetchEvents()
   }, [page])
 
-  // For demo purposes
-  const demoEvents: Event[] = Array.from({ length: 9 }, (_, i) => ({
-    eventId: `event-${i + 1}`,
-    title: [
-      "Annual Alumni Reunion",
-      "Tech Industry Networking Night",
-      "Career Development Workshop",
-      "Homecoming Weekend",
-      "Entrepreneurship Panel",
-      "Alumni Awards Ceremony",
-      "Charity Fundraiser Gala",
-      "Industry Insights Webinar",
-      "Campus Tour & Nostalgia Day",
-    ][i % 9],
-    description:
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
-    author: ["Admin", "Event", "Career"][i % 3],
-    calendar: new Date(Date.now() + (i % 3 === 0 ? -1 : 1) * (i + 1) * 86400000 * 7),
-    location: [
-      "University Main Campus",
-      "Innovation Hub, Downtown",
-      "Online (Zoom)",
-      "Alumni Center",
-      "Conference Center",
-    ][i % 5],
-    attendees: Array.from({ length: Math.floor(Math.random() * 50) + 5 }, (_, j) => `user-${j}`),
-    createdAt: new Date(Date.now() - i * 86400000).toISOString(),
-    mediaURLs: i % 2 === 0 ? [`media-${i + 1}`] : [],
-    comments: []
-  }))
+  // Filter events by search query only
+  const filteredEvents = events.filter((event) => {
+    const q = searchQuery.toLowerCase()
+    return (
+      event.title.toLowerCase().includes(q) ||
+      event.author.toLowerCase().includes(q) ||
+      event.location.toLowerCase().includes(q)
+    )
+  })
+
+  // Sort filtered events by calendar date
+  const sortedEvents = filteredEvents.sort((a, b) => {
+    const dateA = new Date(a.calendar).getTime()
+    const dateB = new Date(b.calendar).getTime()
+    return sortBy === "latest" ? dateB - dateA : dateA - dateB
+  })
 
   if (loading && page === 1) {
     return (
@@ -105,74 +92,94 @@ export default function EventsGrid() {
       </div>
     )
   }
+
   return (
     <div className="space-y-8">
+      <div className="flex flex-col md:flex-row justify-between items-start gap-6 mb-8">
+        <div>
+          <h1 className="text-3xl font-bold mb-2">Events</h1>
+          <p className="text-muted-foreground">
+            Connect with fellow alumni at our upcoming events
+          </p>
+        </div>
+        <EventsFilter
+          searchQuery={searchQuery}
+          setSearchQuery={setSearchQuery}
+          sortBy={sortBy}
+          setSortBy={setSortBy}
+        />
+      </div>
+
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {(events.length > 0 ? events : demoEvents).map((event) => (
-          <Card key={event.eventId} className="h-full flex flex-col">
-            <CardHeader className="pb-2">
-              {event.mediaURLs && event.mediaURLs.length > 0 ? (
-                <div className="h-48 w-full overflow-hidden rounded-t-md">
-                  <img
-                    src={event.mediaURLs[0]}
-                    alt="Story media preview"
-                    className="h-full w-full object-cover"
-                  />
+        {sortedEvents.length > 0 ? (
+          sortedEvents.map((event) => (
+            <Card key={event.eventId} className="h-full flex flex-col">
+              <CardHeader className="pb-2">
+                {event.mediaURLs && event.mediaURLs.length > 0 ? (
+                  <div className="h-48 w-full overflow-hidden rounded-t-md">
+                    <img
+                      src={event.mediaURLs[0]}
+                      alt="Event media preview"
+                      className="h-full w-full object-cover"
+                    />
+                  </div>
+                ) : (
+                  <div className="h-48 w-full bg-muted rounded-t-md" />
+                )}
+                <div className="flex justify-between items-start">
+                  <Link href={`/events/${event.eventId}`} className="hover:underline">
+                    <h3 className="text-xl font-bold">{event.title}</h3>
+                  </Link>
+                  <Badge
+                    variant="outline"
+                    className={
+                      new Date(event.calendar) > new Date()
+                        ? "bg-accent/10 text-accent border-accent"
+                        : "bg-muted text-muted-foreground"
+                    }
+                  >
+                    {new Date(event.calendar) > new Date() ? "Upcoming" : "Past"}
+                  </Badge>
                 </div>
-              ) : (
-                <div className="h-48 w-full bg-muted rounded-t-md" />
-              )}
-              <div className="flex justify-between items-start">
-                <Link href={`/events/${event.eventId}`} className="hover:underline">
-                  <h3 className="text-xl font-bold">{event.title}</h3>
-                </Link>
-                <Badge
-                  variant="outline"
-                  className={
-                    new Date(event.calendar) > new Date()
-                      ? "bg-accent/10 text-accent border-accent"
-                      : "bg-muted text-muted-foreground"
-                  }
-                >
-                  {new Date(event.calendar) > new Date() ? "Upcoming" : "Past"}
-                </Badge>
-              </div>
-            </CardHeader>
-            <CardContent className="flex-1 pb-2">
-              <p className="text-muted-foreground mb-4 line-clamp-2">{event.description}</p>
-              <div className="space-y-2">
-                <div className="flex items-center gap-2 text-sm">
-                  <Calendar className="h-4 w-4 text-primary" />
-                  <span>
-                    {new Date(event.calendar).toLocaleDateString(undefined, {
-                      weekday: "long",
-                      year: "numeric",
-                      month: "long",
-                      day: "numeric",
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    })}
-                  </span>
+              </CardHeader>
+              <CardContent className="flex-1 pb-2">
+                <p className="text-muted-foreground mb-4 line-clamp-2">{event.description}</p>
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2 text-sm">
+                    <Calendar className="h-4 w-4 text-primary" />
+                    <span>
+                      {new Date(event.calendar).toLocaleDateString(undefined, {
+                        weekday: "long",
+                        year: "numeric",
+                        month: "long",
+                        day: "numeric",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2 text-sm">
+                    <MapPin className="h-4 w-4 text-primary" />
+                    <span>{event.location}</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-sm">
+                    <Users className="h-4 w-4 text-primary" />
+                    <span>{event.attendees.length} attending</span>
+                  </div>
                 </div>
-                <div className="flex items-center gap-2 text-sm">
-                  <MapPin className="h-4 w-4 text-primary" />
-                  <span>{event.location}</span>
-                </div>
-                <div className="flex items-center gap-2 text-sm">
-                  <Users className="h-4 w-4 text-primary" />
-                  <span>{event.attendees.length} attending</span>
-                </div>
-              </div>
-            </CardContent>
-            <CardFooter className="pt-2">
-              <Button className="w-full" asChild>
-                <Link href={`/events/${event.eventId}`}>
-                  {new Date(event.calendar) > new Date() ? "Register" : "View Details"}
-                </Link>
-              </Button>
-            </CardFooter>
-          </Card>
-        ))}
+              </CardContent>
+              <CardFooter className="pt-2">
+                <Button className="w-full" asChild>
+                  <Link href={`/events/${event.eventId}`}>
+                    {new Date(event.calendar) > new Date() ? "Register" : "View Details"}
+                  </Link>
+                </Button>
+              </CardFooter>
+            </Card>
+          ))
+        ) : (
+          <p>No events found.</p>
+        )}
       </div>
 
       {loading && page > 1 && (
@@ -193,4 +200,3 @@ export default function EventsGrid() {
     </div>
   )
 }
-
