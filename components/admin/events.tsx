@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
@@ -14,72 +14,70 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Badge } from "@/components/ui/badge"
 import { Calendar, Eye, MoreHorizontal, Search, Trash, Edit, Users } from "lucide-react"
+import { fetchApi } from "@/lib/api/client"
+import { useRouter } from "next/navigation"
 
 type Event = {
-  id: string
+  eventId: string
   title: string
-  organizer: string
-  date: string
+  author: string
+  authorName: string
+  calendar: string
   location: string
   status: "upcoming" | "past" | "cancelled"
-  attendees: number
+  attendees: string[] // assuming attendees is an array of userIds or similar
   createdAt: string
 }
 
 export default function AdminEvents() {
+  const [events, setEvents] = useState<Event[]>([])
+  const [loading, setLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState("")
+  const router = useRouter();
 
-  // In a real app, you would fetch this data from your API
-  const events: Event[] = Array.from({ length: 10 }, (_, i) => ({
-    id: `event-${i + 1}`,
-    title: [
-      "Annual Alumni Reunion",
-      "Tech Industry Networking Night",
-      "Career Development Workshop",
-      "Homecoming Weekend",
-      "Entrepreneurship Panel",
-      "Alumni Awards Ceremony",
-      "Charity Fundraiser Gala",
-      "Industry Insights Webinar",
-      "Campus Tour & Nostalgia Day",
-      "Global Alumni Conference",
-    ][i],
-    organizer: [
-      "Alumni Office",
-      "Tech Club",
-      "Career Services",
-      "Student Affairs",
-      "Business School",
-      "Alumni Association",
-      "Community Outreach",
-      "Academic Affairs",
-      "Campus Relations",
-      "International Office",
-    ][i],
-    date: new Date(Date.now() + (i % 3 === 0 ? -1 : 1) * (i + 1) * 86400000 * 7).toISOString(),
-    location: [
-      "University Main Campus",
-      "Innovation Hub, Downtown",
-      "Online (Zoom)",
-      "Alumni Center",
-      "Conference Center",
-      "Grand Hotel",
-      "University Stadium",
-      "Virtual",
-      "Historic Campus Building",
-      "International Convention Center",
-    ][i],
-    status: i % 3 === 0 ? "past" : i === 4 ? "cancelled" : "upcoming",
-    attendees: Math.floor(Math.random() * 100) + 10,
-    createdAt: new Date(Date.now() - i * 86400000 * 14).toISOString(),
-  }))
+  const goToEvent = (eventId: number | string) => {
+    console.log("Viewing event:", eventId);
+    router.push(`/events/${eventId}`);
+  };
+
+
+  useEffect(() => {
+    const fetchEvents = async () => {
+      try {
+        const data: Event[] = await fetchApi("/events")
+        
+        // Add status field based on calendar date
+        const now = new Date()
+        const eventsWithStatus = data.map(event => {
+          const eventDate = new Date(event.calendar)
+          let status: Event["status"] = "upcoming"
+
+          if (eventDate < now) status = "past"
+          // If you have an isCancelled or similar field, you can override status here
+          // For example: if (event.isCancelled) status = "cancelled"
+
+          return { ...event, status }
+        })
+
+        setEvents(eventsWithStatus)
+      } catch (error) {
+        console.error("Error fetching events:", error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchEvents()
+  }, [])
 
   const filteredEvents = events.filter(
     (event) =>
       event.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      event.organizer.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      event.location.toLowerCase().includes(searchQuery.toLowerCase()),
+      (event.author.toLowerCase().includes(searchQuery.toLowerCase()) ?? false) ||
+      event.location.toLowerCase().includes(searchQuery.toLowerCase())
   )
+
+  if (loading) return <p>Loading events...</p>
 
   return (
     <div className="space-y-4">
@@ -114,17 +112,17 @@ export default function AdminEvents() {
           </TableHeader>
           <TableBody>
             {filteredEvents.map((event) => (
-              <TableRow key={event.id}>
+              <TableRow key={event.eventId}>
                 <TableCell>
                   <div>
                     <div className="font-medium">{event.title}</div>
-                    <div className="text-xs text-muted-foreground">{event.organizer}</div>
+                    <div className="text-xs text-muted-foreground">{event.authorName ?? "Unknown"}</div>
                   </div>
                 </TableCell>
                 <TableCell>
                   <div className="flex items-center gap-2">
                     <Calendar className="h-4 w-4 text-primary" />
-                    <span>{new Date(event.date).toLocaleDateString()}</span>
+                    <span>{new Date(event.calendar).toLocaleDateString()}</span>
                   </div>
                 </TableCell>
                 <TableCell>{event.location}</TableCell>
@@ -138,7 +136,7 @@ export default function AdminEvents() {
                         ? "bg-green-100 text-green-800 border-green-200"
                         : event.status === "past"
                           ? "bg-gray-100 text-gray-800 border-gray-200"
-                          : ""
+                          : "bg-red-100 text-red-800 border-red-200"
                     }
                   >
                     {event.status}
@@ -147,7 +145,7 @@ export default function AdminEvents() {
                 <TableCell>
                   <div className="flex items-center gap-2">
                     <Users className="h-4 w-4 text-primary" />
-                    <span>{event.attendees}</span>
+                    <span>{event.attendees.length}</span>
                   </div>
                 </TableCell>
                 <TableCell>
@@ -160,7 +158,7 @@ export default function AdminEvents() {
                     <DropdownMenuContent align="end">
                       <DropdownMenuLabel>Actions</DropdownMenuLabel>
                       <DropdownMenuSeparator />
-                      <DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => goToEvent(event.eventId)}>
                         <Eye className="h-4 w-4 mr-2" />
                         View
                       </DropdownMenuItem>
@@ -189,4 +187,3 @@ export default function AdminEvents() {
     </div>
   )
 }
-

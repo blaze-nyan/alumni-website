@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useContext, useState } from "react"
 import { useRouter } from "next/navigation"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
@@ -8,9 +8,11 @@ import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/components/ui/card"
 import { fetchApi } from "@/lib/api/client"
+import { AuthContext, AuthProvider } from "@/components/auth-provider"
 
 export default function CreateStoryPage() {
     const router = useRouter()
+	const { user } = useContext(AuthContext);
 
     const [title, setTitle] = useState("")
     const [description, setDescription] = useState("")
@@ -51,6 +53,7 @@ export default function CreateStoryPage() {
         setIsSubmitting(true)
 
         try {
+        const author = user.username;
         const res = await fetchApi("/stories", {
             method: "POST",
             body: JSON.stringify({
@@ -93,10 +96,6 @@ export default function CreateStoryPage() {
                     onChange={(e) => setDescription(e.target.value)}
                     required
                 />
-                </div>
-                <div>
-                <Label htmlFor="author">Author</Label>
-                <Input id="author" value={author} onChange={(e) => setAuthor(e.target.value)} required />
                 </div>
                 <div>
                 <Label htmlFor="media">Upload Images</Label>

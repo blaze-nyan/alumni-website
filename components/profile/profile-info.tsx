@@ -33,18 +33,20 @@ type User = {
 export default function ProfileInfo({ user }: { user: User }) {
 
   const placeholder = {
-    bio: "Class of 2025 graduate with a degree in Computer Science. Currently working as a Senior Software Engineer at Tech Corp.",
-    location: "Australia",
-    graduationYear: "2025",
-    degree: "ICT",
-    company: "ABC Company",
-    position: "Fullstack Engineer",
+    bio: "This user has not provided a bio yet.",
+    location: "N/A",
+    graduationYear: "N/A",
+    degree: "N/A",
+    company: "N/A",
+    position: "N/A",
     socialLinks: {
-      linkedin: "https://linkedin.com/in/username",
-      twitter: "https://twitter.com/username",
-      github: "https://github.com/username",
+      linkedin: "N/A",
+      twitter: "N/A",
+      github: "N/A",
     },
   };
+
+  console.log("User data:", user);
 
   const profileData = {
     bio: user.profileData?.bio || placeholder.bio,

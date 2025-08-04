@@ -36,16 +36,30 @@ export default function AdminPage() {
     <div className="container py-8">
       <h1 className="text-3xl font-bold mb-8">Admin Dashboard</h1>
 
-      <Tabs defaultValue="approval">
-        <TabsList className="grid w-full grid-cols-5">
-          <TabsTrigger value="approval">Approvals</TabsTrigger>
+      <Tabs defaultValue="dashboard">
+        <TabsList className="grid w-full grid-cols-4">
+          <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
+          <TabsTrigger value="users">Users</TabsTrigger>
+          <TabsTrigger value="stories">Stories</TabsTrigger>
+          <TabsTrigger value="events">Events</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="approval" className="mt-6">
+        <TabsContent value="dashboard" className="mt-6">
+          <AdminDashboard />
+        </TabsContent>
+
+        <TabsContent value="users" className="mt-6">
+          <AdminUsers />
+        </TabsContent>
+
+        <TabsContent value="events" className="mt-6">
+          <AdminEvents />
+        </TabsContent>
+
+        <TabsContent value="stories" className="mt-6">
           <AdminApproval />
         </TabsContent>
       </Tabs>
     </div>
   )
 }
-

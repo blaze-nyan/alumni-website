@@ -44,9 +44,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         // console.log(userData)
         setUser(userData);
       } catch (error) {
-        // console.error("Authentication check failed:", error);
-        // Token is invalid or expired
-        // console.log(error)
+        console.error("Authentication check failed:", error);
+        //Token is invalid or expired
+        console.log(error)
         localStorage.removeItem("token");
         localStorage.removeItem("refreshToken");
       } finally {

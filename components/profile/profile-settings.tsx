@@ -11,15 +11,31 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useToast } from "@/components/ui/use-toast"
 import { Loader2 } from "lucide-react"
+import { fetchApi } from "@/lib/api/client"
 
 type User = {
-  id: string
+  userId: string
   username: string
   email: string
   firstName: string
   surName: string
   userType: "alumni" | "admin"
   profileImage?: string
+  createdAt: string
+  updatedAt: string
+  profileData?: {
+    bio?: string;
+    location?: string;
+    graduationYear?: string;
+    degree?: string;
+    company?: string;
+    position?: string;
+    socialLinks?: {
+      linkedin?: string;
+      twitter?: string;
+      github?: string;
+    };
+  };
 }
 
 export default function ProfileSettings({ user }: { user: User }) {
@@ -30,12 +46,12 @@ export default function ProfileSettings({ user }: { user: User }) {
     firstName: user.firstName,
     surName: user.surName,
     email: user.email,
-    bio: "Class of 2018 graduate with a degree in Computer Science. Currently working as a Senior Software Engineer at Tech Corp.",
-    location: "San Francisco, CA",
-    graduationYear: "2018",
-    degree: "Bachelor of Science in Computer Science",
-    company: "Tech Corp",
-    position: "Senior Software Engineer",
+    bio: user.profileData?.bio || "You have not provided a bio yet.",
+    location: user.profileData?.location || "N/A",
+    graduationYear: user.profileData?.graduationYear || "N/A",
+    degree: user.profileData?.degree || "N/A",
+    company: user.profileData?.company || "N/A",
+    position: user.profileData?.position || "N/A",
   })
 
   const [passwordData, setPasswordData] = useState({
@@ -54,28 +70,41 @@ export default function ProfileSettings({ user }: { user: User }) {
     setPasswordData((prev) => ({ ...prev, [name]: value }))
   }
 
-  const handleProfileSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsSubmitting(true)
+  const handleProfileSubmit = async (e:any) => {
+    e.preventDefault();
 
-    try {
-      // In a real app, you would send this data to your API
-      await new Promise((resolve) => setTimeout(resolve, 1000)) // Simulate API call
-
-      toast({
-        title: "Profile updated",
-        description: "Your profile information has been updated successfully.",
-      })
-    } catch (error) {
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: "Failed to update profile. Please try again.",
-      })
-    } finally {
-      setIsSubmitting(false)
+    if (!user?.userId) {
+      toast({ variant: "destructive", title: "Error", description: "User ID is missing" });
+      return;
     }
-  }
+
+    setIsSubmitting(true);
+    try {
+          await fetchApi(`/users/${user.userId}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        firstName: String(profileData.firstName || ""),
+        surName: String(profileData.surName || ""),
+        email: String(profileData.email || ""),
+        profileData: {
+          bio: String(profileData.bio || ""),
+          location: String(profileData.location || ""),
+          graduationYear: String(profileData.graduationYear ?? ""),
+          degree: String(profileData.degree || ""),
+          company: String(profileData.company || ""),
+          position: String(profileData.position || ""),
+        },
+      }),
+    });
+
+      toast({ title: "Profile updated", description: "Your profile information has been updated." });
+    } catch (error: any) {
+      toast({ variant: "destructive", title: "Profile update error", description: error.message });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   const handlePasswordSubmit = async (e: React.FormEvent) => {
     e.preventDefault()

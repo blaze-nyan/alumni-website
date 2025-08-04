@@ -154,7 +154,7 @@ function EventPage({ params }: Props) {
             {/* Register / Unregister Button */}
             <div>
                 {isAttending ? (
-                    <Button variant="destructive" onClick={handleUnregister}>
+                    <Button onClick={handleUnregister}>
                         Unregister from this event
                     </Button>
                 ) : (
