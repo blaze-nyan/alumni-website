@@ -29,6 +29,8 @@ type User = {
     graduationYear?: string;
     degree?: string;
     company?: string;
+    department?: string;
+    faculty?: string;
     position?: string;
     socialLinks?: {
       linkedin?: string;
@@ -52,6 +54,8 @@ export default function ProfileSettings({ user }: { user: User }) {
     degree: user.profileData?.degree || "N/A",
     company: user.profileData?.company || "N/A",
     position: user.profileData?.position || "N/A",
+    faculty: user.profileData?.faculty || "N/A",
+    department: user.profileData?.department || "N/A",
   })
 
   const [passwordData, setPasswordData] = useState({
@@ -94,6 +98,8 @@ export default function ProfileSettings({ user }: { user: User }) {
           degree: String(profileData.degree || ""),
           company: String(profileData.company || ""),
           position: String(profileData.position || ""),
+          faculty: String(profileData.faculty || ""),
+          department: String(profileData.department || ""),
         },
       }),
     });
@@ -210,6 +216,17 @@ export default function ProfileSettings({ user }: { user: User }) {
                 <div className="space-y-2">
                   <Label htmlFor="position">Position</Label>
                   <Input id="position" name="position" value={profileData.position} onChange={handleProfileChange} />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="faculty">Faculty</Label>
+                  <Input id="faculty" name="faculty" value={profileData.faculty} onChange={handleProfileChange} />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="department">Department</Label>
+                  <Input id="department" name="department" value={profileData.department} onChange={handleProfileChange} />
                 </div>
               </div>
             </CardContent>

@@ -55,6 +55,12 @@ export default function Header() {
           >
             Events
           </Link>
+          <Link
+            href="/questionaire"
+            className="text-sm font-medium hover:text-primary"
+          >
+            Questionnaire
+          </Link>
         </nav>
 
         {/* Desktop Auth Buttons */}
@@ -153,6 +159,13 @@ export default function Header() {
               onClick={toggleMenu}
             >
               Events
+            </Link>
+            <Link
+              href="/questionaire"
+              className="text-sm font-medium hover:text-primary"
+              onClick={toggleMenu}
+            >
+              Questionnaire
             </Link>
 
             {user ? (

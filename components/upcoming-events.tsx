@@ -114,7 +114,13 @@ export default function UpcomingEvents() {
                   />
                 </div>
               ) : (
-                <div className="h-48 w-full bg-muted rounded-t-md" />
+                <div className="h-48 w-full bg-muted rounded-t-md flex items-center justify-center">
+                  <svg width="48" height="48" fill="none" viewBox="0 0 24 24" className="text-muted-foreground">
+                    <rect x="3" y="5" width="18" height="14" rx="2" stroke="currentColor" strokeWidth="2" />
+                    <circle cx="8" cy="10" r="2" stroke="currentColor" strokeWidth="2" />
+                    <path d="M21 19l-5-5a2 2 0 0 0-2.83 0l-3.34 3.34a2 2 0 0 1-2.83 0L3 13" stroke="currentColor" strokeWidth="2" />
+                  </svg>
+                </div>
               )}
               <div className="flex justify-between items-start">
                 <Link href={`/events/${event.eventId}`} className="hover:underline">

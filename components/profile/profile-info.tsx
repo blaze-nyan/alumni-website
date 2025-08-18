@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge"
 import { Calendar, Mail, MapPin, Edit } from "lucide-react"
 
 type User = {
-  id: string
+  userId: string
   username: string
   email: string
   firstName: string
@@ -22,6 +22,8 @@ type User = {
     degree?: string;
     company?: string;
     position?: string;
+    department?: string;
+    faculty?: string;
     socialLinks?: {
       linkedin?: string;
       twitter?: string;
@@ -36,6 +38,8 @@ export default function ProfileInfo({ user }: { user: User }) {
     bio: "This user has not provided a bio yet.",
     location: "N/A",
     graduationYear: "N/A",
+    faculty: "N/A",
+    department: "N/A",
     degree: "N/A",
     company: "N/A",
     position: "N/A",
@@ -55,6 +59,8 @@ export default function ProfileInfo({ user }: { user: User }) {
     degree: user.profileData?.degree || placeholder.degree,
     company: user.profileData?.company || placeholder.company,
     position: user.profileData?.position || placeholder.position,
+    department: user.profileData?.department || placeholder.department,
+    faculty: user.profileData?.faculty || placeholder.faculty,
     socialLinks: {
       linkedin: user.profileData?.socialLinks?.linkedin || placeholder.socialLinks.linkedin,
       twitter: user.profileData?.socialLinks?.twitter || placeholder.socialLinks.twitter,
@@ -92,7 +98,15 @@ export default function ProfileInfo({ user }: { user: User }) {
               <p className="text-muted-foreground">@{user.username}</p>
             </div>
             <div className="flex gap-2">
-              <Button>Share Profile</Button>
+              <Button
+                onClick={() => {
+                  console.log(process.env.NEXT_PUBLIC_APP_URL)
+                  const url = `${process.env.NEXT_PUBLIC_APP_URL}/profile/${user.userId}`;
+                  navigator.clipboard.writeText(url);
+                }}
+              >
+                Share Profile
+              </Button>
             </div>
           </div>
 
@@ -124,6 +138,9 @@ export default function ProfileInfo({ user }: { user: User }) {
             </Badge>
             <Badge variant="outline">
               {profileData.position} at {profileData.company}
+            </Badge>
+            <Badge variant="outline">
+              Alumni of {profileData.faculty} at {profileData.department}
             </Badge>
           </div>
         </div>

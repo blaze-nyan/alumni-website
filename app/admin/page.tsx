@@ -9,6 +9,7 @@ import AdminUsers from "@/components/admin/users"
 import AdminStories from "@/components/admin/stories"
 import AdminEvents from "@/components/admin/events"
 import AdminApproval from "@/components/admin/approval"
+import QuestionnaireBuilder from "@/components/admin/questionnaire-builder"
 
 export default function AdminPage() {
   const { user, loading } = useAuth()
@@ -37,11 +38,12 @@ export default function AdminPage() {
       <h1 className="text-3xl font-bold mb-8">Admin Dashboard</h1>
 
       <Tabs defaultValue="dashboard">
-        <TabsList className="grid w-full grid-cols-4">
+        <TabsList className="grid w-full grid-cols-5">
           <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
           <TabsTrigger value="users">Users</TabsTrigger>
           <TabsTrigger value="stories">Stories</TabsTrigger>
           <TabsTrigger value="events">Events</TabsTrigger>
+          <TabsTrigger value="questionnaire">Questionnaires</TabsTrigger>
         </TabsList>
 
         <TabsContent value="dashboard" className="mt-6">
@@ -58,6 +60,10 @@ export default function AdminPage() {
 
         <TabsContent value="stories" className="mt-6">
           <AdminApproval />
+        </TabsContent>
+
+        <TabsContent value="questionnaire" className="mt-6">
+          <QuestionnaireBuilder />
         </TabsContent>
       </Tabs>
     </div>

@@ -1,5 +1,5 @@
 // Base API client with common configuration for fetch requests
-export const API_BASE_URL = "http://localhost:5172/api";
+export const API_BASE_URL = `${process.env.NEXT_PUBLIC_BACKEND_URL}/api`;
 
 // Default headers
 const defaultHeaders = {
